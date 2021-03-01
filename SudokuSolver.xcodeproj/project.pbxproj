@@ -15,6 +15,7 @@
 		F3683C0325E849D200B84929 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F3683C0125E849D200B84929 /* LaunchScreen.storyboard */; };
 		F3683C0E25E849D200B84929 /* SudokuSolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3683C0D25E849D200B84929 /* SudokuSolverTests.swift */; };
 		F3683C1925E849D200B84929 /* SudokuSolverUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3683C1825E849D200B84929 /* SudokuSolverUITests.swift */; };
+		F3683C2A25EC6AC500B84929 /* VideoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3683C2925EC6AC500B84929 /* VideoPreviewView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		F3683C1425E849D200B84929 /* SudokuSolverUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SudokuSolverUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3683C1825E849D200B84929 /* SudokuSolverUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuSolverUITests.swift; sourceTree = "<group>"; };
 		F3683C1A25E849D200B84929 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F3683C2925EC6AC500B84929 /* VideoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +104,7 @@
 				F3683BF625E849D100B84929 /* AppDelegate.swift */,
 				F3683BF825E849D100B84929 /* SceneDelegate.swift */,
 				F3683BFA25E849D100B84929 /* ViewController.swift */,
+				F3683C2925EC6AC500B84929 /* VideoPreviewView.swift */,
 				F3683BFC25E849D100B84929 /* Main.storyboard */,
 				F3683BFF25E849D200B84929 /* Assets.xcassets */,
 				F3683C0125E849D200B84929 /* LaunchScreen.storyboard */,
@@ -259,6 +262,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3683BFB25E849D100B84929 /* ViewController.swift in Sources */,
+				F3683C2A25EC6AC500B84929 /* VideoPreviewView.swift in Sources */,
 				F3683BF725E849D100B84929 /* AppDelegate.swift in Sources */,
 				F3683BF925E849D100B84929 /* SceneDelegate.swift in Sources */,
 			);
