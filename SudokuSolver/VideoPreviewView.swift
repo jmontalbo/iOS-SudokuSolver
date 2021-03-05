@@ -9,6 +9,8 @@ import AVFoundation
 
 class VideoPreviewView: UIView {
     
+    private var boxLayer = [CAShapeLayer]()
+    private var visionToAVFTransform = CGAffineTransform.identity
     var videoPreviewLayer: AVCaptureVideoPreviewLayer {
         guard let layer = layer as? AVCaptureVideoPreviewLayer else {
             fatalError("Expected `AVCaptureVideoPreviewLayer` type for layer. Check PreviewView.layerClass implementation.")
@@ -27,5 +29,32 @@ class VideoPreviewView: UIView {
     
     override class var layerClass: AnyClass {
         return AVCaptureVideoPreviewLayer.self
+    }
+    
+    func show(rectangles: [CGRect]) {
+        DispatchQueue.main.async {
+            let layer = self.videoPreviewLayer
+            self.removeBoxes()
+            for rectangle in rectangles {
+                let color = UIColor.red
+                let rect = layer.layerRectConverted(fromMetadataOutputRect: rectangle.applying(self.visionToAVFTransform))
+                self.draw(rect: rect, color: color.cgColor)
+            }
+        }
+    }
+    private func removeBoxes() {
+        for layer in boxLayer {
+            layer.removeFromSuperlayer()
+        }
+        boxLayer.removeAll()
+    }
+    private func draw(rect: CGRect, color: CGColor) {
+        let layer = CAShapeLayer()
+        layer.opacity = 0.5
+        layer.borderColor = color
+        layer.borderWidth = 1
+        layer.frame = rect
+        boxLayer.append(layer)
+        videoPreviewLayer.insertSublayer(layer, at: 1)
     }
 }
