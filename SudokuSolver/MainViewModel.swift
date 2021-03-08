@@ -8,15 +8,23 @@
 import AVFoundation
 import Photos
 import Vision
+import Combine
 
-class MainViewModel: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     let session = AVCaptureSession()
-    weak var delegate: MainViewModelDelegate?
-    private let videoDataOutputQueue = DispatchQueue(label: "com.JDM.videoDataOutputQueue") //DispatchQueue establishes separate thread
+    @Published private(set) var detectedPuzzles = [VNRectangleObservation]()
+    private var capturedCancellable: AnyCancellable? = nil
+
+    @Published private var capturedFrames = [CMSampleBuffer]()
+    private let videoDataOutputQueue = DispatchQueue(label: "com.JDM.videoDataOutputQueue")
+    private let imageProcessingQueue = DispatchQueue(label: "com.JDM.imageProcessingQueue")
     
     override init() {
         super.init()
+        capturedCancellable = $capturedFrames.subscribe(on: videoDataOutputQueue)
+            .receive(on: imageProcessingQueue)
+            .sink(receiveValue: processFrames)
         guard let videoDevice = AVCaptureDevice.default(for: AVMediaType.video) else {
             print("Video Device was nil:")
             return
@@ -53,44 +61,45 @@ class MainViewModel: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         session.startRunning()
     }
     
+    private func processFrames(capturedFrames: [CMSampleBuffer]) {
+        for frame in capturedFrames {
+            let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: frame.imageBuffer!, orientation: .up, options: [:]) // look at orientation details and handle nil sampleBuffer
+            let rectangleDetectionRequest = VNDetectRectanglesRequest()
+            //        rectangleDetectionRequest.minimumConfidence = VNConfidence(0.8)
+            rectangleDetectionRequest.minimumAspectRatio = VNAspectRatio(0.95)
+            rectangleDetectionRequest.maximumAspectRatio = VNAspectRatio(1.05)
+            rectangleDetectionRequest.minimumSize = Float(0.3)
+            rectangleDetectionRequest.maximumObservations = Int(10)
+            
+            do {
+                try imageRequestHandler.perform([rectangleDetectionRequest])
+            } catch {
+                print("imageRequestHandler error")
+            }
+            
+            if let rectObservations = rectangleDetectionRequest.results as? [VNRectangleObservation] {
+                detectedPuzzles = rectObservations
+                for observation in rectObservations {
+                    print(observation)
+                }
+            }
+            else {
+                print("observation is nil")
+            }
+        }
+    }
+    
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection)
     {
-        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: sampleBuffer.imageBuffer!, orientation: .up, options: [:]) // look at orientation details and handle nil sampleBuffer
-        let rectangleDetectionRequest = VNDetectRectanglesRequest()
-        //        rectangleDetectionRequest.minimumConfidence = VNConfidence(0.8)
-        rectangleDetectionRequest.minimumAspectRatio = VNAspectRatio(0.9)
-        rectangleDetectionRequest.maximumAspectRatio = VNAspectRatio(1.1)
-        rectangleDetectionRequest.minimumSize = Float(0.5)
-        rectangleDetectionRequest.maximumObservations = Int(10)
-        
-        do {
-            try imageRequestHandler.perform([rectangleDetectionRequest])
-        } catch {
-            print("imageRequestHandler error")
-        }
-        
-        if let rectObservations = rectangleDetectionRequest.results as? [VNRectangleObservation] {
-            delegate?.didDetectPuzzles(viewModel: self, puzzles: rectObservations)
-            for observation in rectObservations {
-                print(observation)
-            }
-        }
-        else {
-            print("observation is nil")
-        }
-        //        let sampleBufferCopy = buffer.deepCopy()
-        //        print("Video buffer \(sampleBuffer).")
+        capturedFrames = [sampleBuffer]
+//        capturedFrames.append(sampleBuffer)
     }
     
     func captureOutput(_ captureOutput: AVCaptureOutput,
                        didDrop sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection) {
-        print("Sample buffer dropped.")
+        print("Sample Buffer Dropped.")
     }
     
-}
-
-protocol MainViewModelDelegate: AnyObject {
-    func didDetectPuzzles(viewModel: MainViewModel, puzzles: [VNRectangleObservation])
 }

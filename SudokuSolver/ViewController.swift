@@ -9,15 +9,16 @@ import UIKit
 import AVFoundation
 import Photos
 import Vision
+import Combine
 
-class ViewController: UIViewController, MainViewModelDelegate {
+class ViewController: UIViewController {
     
     private let mainViewModel = MainViewModel()
     private let previewView = VideoPreviewView()
+    private var showCancellable: AnyCancellable? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        mainViewModel.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(orientationChanged), name: UIDevice.orientationDidChangeNotification, object: nil)
         previewView.session = mainViewModel.session
         view.addSubview(previewView)
@@ -26,6 +27,11 @@ class ViewController: UIViewController, MainViewModelDelegate {
         previewView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         previewView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         previewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        showCancellable = mainViewModel.$detectedPuzzles.sink(receiveValue: show)
+    }
+    
+    private func show(puzzles: [VNRectangleObservation]) {
+        previewView.show(rectangles: puzzles)
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -44,15 +50,4 @@ class ViewController: UIViewController, MainViewModelDelegate {
             break
         }
     }
-    
-    // MARK: MainViewModelDelegate
-    func didDetectPuzzles(viewModel: MainViewModel, puzzles: [VNRectangleObservation]) {
-        var rectangles = [CGRect]()
-        for puzzle in puzzles{
-            rectangles.append(puzzle.boundingBox)
-        }
-        previewView.show(rectangles: rectangles)
-    }
 }
-
-
