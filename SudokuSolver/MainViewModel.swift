@@ -9,20 +9,22 @@ import AVFoundation
 import Photos
 import Vision
 import Combine
+import UIKit
 
 class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     let session = AVCaptureSession()
     @Published private(set) var detectedPuzzles = [VNRectangleObservation]()
+    @Published private(set) var capturedPreviewImage = UIImage()
     private var capturedCancellable: AnyCancellable? = nil
-
-    @Published private var capturedFrames = [CMSampleBuffer]()
+    
+    private let capturedFramesSubject = PassthroughSubject<CMSampleBuffer, Never>()
     private let videoDataOutputQueue = DispatchQueue(label: "com.JDM.videoDataOutputQueue")
     private let imageProcessingQueue = DispatchQueue(label: "com.JDM.imageProcessingQueue")
     
     override init() {
         super.init()
-        capturedCancellable = $capturedFrames.subscribe(on: videoDataOutputQueue)
+        capturedCancellable = capturedFramesSubject.subscribe(on: videoDataOutputQueue)
             .receive(on: imageProcessingQueue)
             .sink(receiveValue: processFrames)
         guard let videoDevice = AVCaptureDevice.default(for: AVMediaType.video) else {
@@ -61,45 +63,76 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         session.startRunning()
     }
     
-    private func processFrames(capturedFrames: [CMSampleBuffer]) {
-        for frame in capturedFrames {
-            let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: frame.imageBuffer!, orientation: .up, options: [:]) // look at orientation details and handle nil sampleBuffer
-            let rectangleDetectionRequest = VNDetectRectanglesRequest()
-            //        rectangleDetectionRequest.minimumConfidence = VNConfidence(0.8)
-            rectangleDetectionRequest.minimumAspectRatio = VNAspectRatio(0.95)
-            rectangleDetectionRequest.maximumAspectRatio = VNAspectRatio(1.05)
-            rectangleDetectionRequest.minimumSize = Float(0.3)
-            rectangleDetectionRequest.maximumObservations = Int(10)
+    private func processFrames(capturedFrame: CMSampleBuffer) {
+        guard let imageBuffer = capturedFrame.imageBuffer else {
+            return
+        }
+        let image = CIImage(cvPixelBuffer: imageBuffer)
+        let rotatedImage = image.oriented(.right)
+        let imageRequestHandler = VNImageRequestHandler(ciImage: rotatedImage, options: [:])
+        let rectangleDetectionRequest = VNDetectRectanglesRequest()
+        //        rectangleDetectionRequest.minimumConfidence = VNConfidence(0.8)
+        rectangleDetectionRequest.minimumAspectRatio = VNAspectRatio(0.95)
+        rectangleDetectionRequest.maximumAspectRatio = VNAspectRatio(1.05)
+        rectangleDetectionRequest.minimumSize = Float(0.3)
+        rectangleDetectionRequest.maximumObservations = Int(10)
+        
+        do {
+            try imageRequestHandler.perform([rectangleDetectionRequest])
+        } catch {
+            print("imageRequestHandler error")
+        }
+        
+        if let rectObservations = rectangleDetectionRequest.results as? [VNRectangleObservation],
+           let firstRectObservation = rectObservations.first {
+            detectedPuzzles = rectObservations
+            let cropRect = VNImageRectForNormalizedRect(firstRectObservation.boundingBox, Int(rotatedImage.extent.width), Int(rotatedImage.extent.height))
+            let croppedImage = rotatedImage.cropped(to: cropRect)
+            let transform = CGAffineTransform.identity
+                .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
+            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
             
+//            let request = VNRecognizeTextRequest()
+            let request = VNDetectTextRectanglesRequest()
+            request.reportCharacterBoxes = true
+//            request.recognitionLevel = .fast
+//            request.usesLanguageCorrection = false
+            let croppedImageRequestHandler = VNImageRequestHandler(ciImage: croppedImage.transformed(by: transform), options: [:])
             do {
-                try imageRequestHandler.perform([rectangleDetectionRequest])
+                try croppedImageRequestHandler.perform([request])
             } catch {
                 print("imageRequestHandler error")
             }
-            
-            if let rectObservations = rectangleDetectionRequest.results as? [VNRectangleObservation] {
-                detectedPuzzles = rectObservations
-                for observation in rectObservations {
-                    print(observation)
-                }
+            if let textObservations = request.results as? [VNTextObservation] {
+                print(textObservations.count)
+//                for observation in textObservations {
+//                    print(observation.characterBoxes)
+//                }
             }
             else {
-                print("observation is nil")
+                print("No Observations"   )
             }
+        }
+        else {
+            print("observation is nil")
         }
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection)
     {
-        capturedFrames = [sampleBuffer]
-//        capturedFrames.append(sampleBuffer)
+        var copySampleBuffer: CMSampleBuffer?
+        let error = CMSampleBufferCreateCopy(allocator: nil, sampleBuffer: sampleBuffer, sampleBufferOut: &copySampleBuffer)
+        if error == noErr {
+            capturedFramesSubject.send(copySampleBuffer!)
+        }
+        
     }
     
     func captureOutput(_ captureOutput: AVCaptureOutput,
                        didDrop sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection) {
-        print("Sample Buffer Dropped.")
+//        print("Sample Buffer Dropped.")
     }
     
 }

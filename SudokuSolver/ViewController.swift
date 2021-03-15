@@ -15,7 +15,9 @@ class ViewController: UIViewController {
     
     private let mainViewModel = MainViewModel()
     private let previewView = VideoPreviewView()
+    private let capturedView = UIImageView()
     private var showCancellable: AnyCancellable? = nil
+    private var setPreviewImageCancellable: AnyCancellable? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,11 +29,29 @@ class ViewController: UIViewController {
         previewView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         previewView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         previewView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        showCancellable = mainViewModel.$detectedPuzzles.sink(receiveValue: show)
+
+        capturedView.contentMode = .scaleToFill
+        capturedView.backgroundColor = .black
+        view.addSubview(capturedView)
+        capturedView.translatesAutoresizingMaskIntoConstraints = false
+        capturedView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        capturedView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        capturedView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5).isActive = true
+        capturedView.heightAnchor.constraint(equalTo: capturedView.widthAnchor).isActive = true
+
+        showCancellable = mainViewModel.$detectedPuzzles.receive(on: DispatchQueue.main)
+            .sink(receiveValue: show)
+        
+        setPreviewImageCancellable = mainViewModel.$capturedPreviewImage.receive(on: DispatchQueue.main)
+            .sink(receiveValue: setPreviewImage)
     }
     
     private func show(puzzles: [VNRectangleObservation]) {
         previewView.show(rectangles: puzzles)
+    }
+    
+    private func setPreviewImage(image: UIImage) {
+        capturedView.image = image
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -41,9 +61,9 @@ class ViewController: UIViewController {
     @objc func orientationChanged() {
         switch UIDevice.current.orientation {
         case .landscapeLeft:
-            previewView.videoPreviewLayer.connection?.videoOrientation = .landscapeRight
-        case .landscapeRight:
             previewView.videoPreviewLayer.connection?.videoOrientation = .landscapeLeft
+        case .landscapeRight:
+            previewView.videoPreviewLayer.connection?.videoOrientation = .landscapeRight
         case .portrait:
             previewView.videoPreviewLayer.connection?.videoOrientation = .portrait
         default:

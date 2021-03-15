@@ -53,9 +53,9 @@ class VideoPreviewView: UIView {
         layer.lineWidth = 2
         let linePath = UIBezierPath()
         let transform = CGAffineTransform.identity
-            .scaledBy(x: -1, y: 1)
+            .scaledBy(x: 1, y: -1)
             .scaledBy(x: videoPreviewLayer.bounds.size.width, y: videoPreviewLayer.bounds.size.height)
-            .rotated(by: .pi/2.0)
+            .translatedBy(x: 0, y: -1)
         linePath.move(to: rect.topLeft.applying(transform))
         linePath.addLine(to: rect.topRight.applying(transform))
         linePath.addLine(to: rect.bottomRight.applying(transform))
