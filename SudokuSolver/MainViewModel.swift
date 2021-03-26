@@ -21,8 +21,10 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     private let capturedFramesSubject = PassthroughSubject<CMSampleBuffer, Never>()
     private let videoDataOutputQueue = DispatchQueue(label: "com.JDM.videoDataOutputQueue")
     private let imageProcessingQueue = DispatchQueue(label: "com.JDM.imageProcessingQueue")
+    private var visionModel: VNCoreMLModel? = nil
     
     override init() {
+        
         super.init()
         capturedCancellable = capturedFramesSubject.subscribe(on: videoDataOutputQueue)
             .receive(on: imageProcessingQueue)
@@ -90,28 +92,11 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             let croppedImage = rotatedImage.cropped(to: cropRect)
             let transform = CGAffineTransform.identity
                 .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
             
-//            let request = VNRecognizeTextRequest()
-            let request = VNDetectTextRectanglesRequest()
-            request.reportCharacterBoxes = true
-//            request.recognitionLevel = .fast
-//            request.usesLanguageCorrection = false
-            let croppedImageRequestHandler = VNImageRequestHandler(ciImage: croppedImage.transformed(by: transform), options: [:])
-            do {
-                try croppedImageRequestHandler.perform([request])
-            } catch {
-                print("imageRequestHandler error")
-            }
-            if let textObservations = request.results as? [VNTextObservation] {
-                print(textObservations.count)
-//                for observation in textObservations {
-//                    print(observation.characterBoxes)
-//                }
-            }
-            else {
-                print("No Observations"   )
-            }
+            let visionModel = DigitDetector()
+            let digitObservation = visionModel.detect(croppedImage.transformed(by: transform))
+            print("observed digit \(digitObservation)")
+            capturedPreviewImage = visionModel.croppedPreviewImage
         }
         else {
             print("observation is nil")
