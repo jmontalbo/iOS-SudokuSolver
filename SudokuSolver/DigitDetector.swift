@@ -13,8 +13,8 @@ class DigitDetector {
     
     public var croppedPreviewImage = UIImage()
     let detector: VNCoreMLModel!
-    static let sizeROI = CGSize(width: 1.0/9.0 * 0.9, height: 1.0/9.0 * 0.9)
-    static let singleROI = CGRect(origin: CGPoint(x: 0.03, y: 0.03), size: sizeROI)
+    static let sizeROI = CGSize(width: 1.0/9.0, height: 1.0/9.0)
+    static let singleROI = CGRect(origin: CGPoint(x: 0.0, y: 1.0 - 1.0/9.0), size: sizeROI)
     static let gridROIs = { () -> [CGRect] in
         var gridROIs = [CGRect]()
         for i in 0...8 {
@@ -44,21 +44,23 @@ class DigitDetector {
     }
     
     public func detect(_ image: CIImage) -> [DigitDetectorResult] {
-        let fixedImage = image.oriented(CGImagePropertyOrientation.downMirrored)
-        let imageRequestHandler = VNImageRequestHandler(ciImage: fixedImage, orientation: .up, options: [:])
+        let fixedImage = image //.oriented(CGImagePropertyOrientation.downMirrored)
+        let cropRect = VNImageRectForNormalizedRect(DigitDetector.singleROI,
+                                                    Int(fixedImage.extent.width),
+                                                    Int(fixedImage.extent.height))
+        let croppedImage = fixedImage.cropped(to: cropRect)
+//        croppedPreviewImage = UIImage(ciImage: croppedImage)
+        let transform = CGAffineTransform.identity
+            .translatedBy(x: -cropRect.origin.x,
+                          y: -cropRect.origin.y)
+        let fixedCroppedImage = croppedImage.transformed(by: transform)
+        croppedPreviewImage = UIImage(ciImage: fixedCroppedImage)
+        let imageRequestHandler = VNImageRequestHandler(ciImage: fixedCroppedImage, orientation: .up, options: [:])
         do {
-            let cropRect = VNImageRectForNormalizedRect(DigitDetector.singleROI,
-                                                        Int(fixedImage.extent.width),
-                                                        Int(fixedImage.extent.height))
-            let croppedImage = fixedImage.cropped(to: cropRect)
-            let transform = CGAffineTransform.identity
-                .translatedBy(x: -cropRect.origin.x,
-                              y: -cropRect.origin.y)
-            croppedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
             var digits = [DigitDetectorResult]()
             for singleCellROI in [DigitDetector.singleROI] {
                 let mlRequest = VNCoreMLRequest(model: detector)
-                mlRequest.regionOfInterest = singleCellROI
+//                mlRequest.regionOfInterest = singleCellROI
                 try imageRequestHandler.perform([mlRequest])
                 if let textObservations = mlRequest.results as? [VNClassificationObservation] {
                     var highestConfidenceTextObservation: VNClassificationObservation? = nil

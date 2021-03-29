@@ -61,6 +61,7 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             print("Could not establish output connection")
             return
         }
+        connection.videoOrientation = .portrait
         connection.isEnabled = true
         session.startRunning()
     }
@@ -70,8 +71,7 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             return
         }
         let image = CIImage(cvPixelBuffer: imageBuffer)
-        let rotatedImage = image.oriented(.right)
-        let imageRequestHandler = VNImageRequestHandler(ciImage: rotatedImage, options: [:])
+        let imageRequestHandler = VNImageRequestHandler(ciImage: image, options: [:])
         let rectangleDetectionRequest = VNDetectRectanglesRequest()
         //        rectangleDetectionRequest.minimumConfidence = VNConfidence(0.8)
         rectangleDetectionRequest.minimumAspectRatio = VNAspectRatio(0.95)
@@ -88,11 +88,11 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         if let rectObservations = rectangleDetectionRequest.results as? [VNRectangleObservation],
            let firstRectObservation = rectObservations.first {
             detectedPuzzles = rectObservations
-            let cropRect = VNImageRectForNormalizedRect(firstRectObservation.boundingBox, Int(rotatedImage.extent.width), Int(rotatedImage.extent.height))
-            let croppedImage = rotatedImage.cropped(to: cropRect)
+            let cropRect = VNImageRectForNormalizedRect(firstRectObservation.boundingBox, Int(image.extent.width), Int(image.extent.height))
+            let croppedImage = image.cropped(to: cropRect)
             let transform = CGAffineTransform.identity
                 .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-            
+//            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
             let visionModel = DigitDetector()
             let digitObservation = visionModel.detect(croppedImage.transformed(by: transform))
             print("observed digit \(digitObservation)")
