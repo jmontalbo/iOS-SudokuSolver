@@ -21,37 +21,36 @@ class DigitDetectorTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-//    func testDetectorDetectsSingleDigit0() throws {
-//        let fileString = Bundle(for: type(of: self)).path(forResource: "singleDigit0", ofType: "png")!
-//        let imageWithSingleDigit = CIImage(image: UIImage(contentsOfFile: fileString)!)!
-//        let detectedDigits = detectorUnderTest.detect(imageWithSingleDigit)
-//        XCTAssertEqual(detectedDigits.count, 1)
-//        if let detectedDigit = detectedDigits.first {
-//            let imageCenter = CGPoint(x: imageWithSingleDigit.extent.width / 2.0,
-//                                      y: imageWithSingleDigit.extent.height / 2.0)
-//            XCTAssertTrue(detectedDigit.boundingBox.contains(imageCenter))
-//            XCTAssertEqual(detectedDigit.digit, "0")
-//        }
-//    }
-//
-//    func testDetectorDetectsSingleDigit2() throws {
-//        let fileString = Bundle(for: type(of: self)).path(forResource: "singleDigit2", ofType: "png")!
-//        let imageWithSingleDigit = CIImage(image: UIImage(contentsOfFile: fileString)!)!
-//        let detectedDigits = detectorUnderTest.detect(imageWithSingleDigit)
-//        XCTAssertEqual(detectedDigits.count, 1)
-//        if let detectedDigit = detectedDigits.first {
-//            let imageCenter = CGPoint(x: imageWithSingleDigit.extent.width / 2.0,
-//                                      y: imageWithSingleDigit.extent.height / 2.0)
-//            XCTAssertTrue(detectedDigit.boundingBox.contains(imageCenter))
-//            XCTAssertEqual(detectedDigit.digit, "2")
-//        }
-//    }
-
-    func testDetectorDetectsDigitsPuzzle4() throws {
-        let fileString = Bundle(for: type(of: self)).path(forResource: "Puzzle4", ofType: "png")!
+    func testDetectorDetectsDigitsPuzzle1() throws {
+        let puzzle1ExpectedResults = [
+            "1": [(1, 0), (5, 7), (6, 5)],
+            "2": [(2, 6), (7, 2)],
+            "3": [(2, 4), (8, 6)],
+            "4": [(2, 3), (5, 6), (8, 1)],
+            "5": [(4, 3), (7, 7)],
+            "6": [(3, 8)],
+            "7": [(0, 3)],
+            "8": [(5, 8), (6, 4)],
+            "9": [(4, 5)],
+        ]
+        let testExpectation = expectation(description: "Received Detected Results")
+        let fileString = Bundle(for: type(of: self)).path(forResource: "puzzle1", ofType: "png")!
         let imageWithPuzzle = CIImage(image: UIImage(contentsOfFile: fileString)!)!
-        let detectedDigits = detectorUnderTest.detect(imageWithPuzzle)
-        XCTAssertEqual(detectedDigits.count, 17)
+        var detectedResults: [DigitDetectorResult]? = nil
+        detectorUnderTest.detect(imageWithPuzzle) { results in
+            detectedResults = results
+            testExpectation.fulfill()
+        }
+        waitForExpectations(timeout: 5.0) {_ in
+            XCTAssertEqual(detectedResults!.count, 17)
+            for detectedResult in detectedResults! {
+                let validSquares = puzzle1ExpectedResults[detectedResult.digit]!
+                let detectedResultCoordinates = (detectedResult.row, detectedResult.column)
+                XCTAssertTrue(validSquares.contains(where: {
+                    (validSquare) -> Bool in
+                    return detectedResultCoordinates.0 == validSquare.0 && detectedResultCoordinates.1 == validSquare.1
+                } ))
+            }
+        }
     }
 }
-

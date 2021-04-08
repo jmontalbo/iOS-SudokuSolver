@@ -8,110 +8,44 @@
 import Foundation
 import Vision
 import UIKit
+import MLKitTextRecognition
+import MLKitVision
+
 
 class DigitDetector {
     
     public var croppedPreviewImage = UIImage()
-    let detector: VNCoreMLModel!
-    static let sizeROI = CGSize(width: 1.0/9.0, height: 1.0/9.0)
-    static let singleROI = CGRect(origin: CGPoint(x: 0.0, y: 1.0 - 1.0/9.0), size: sizeROI)
-    static let gridROIs = { () -> [CGRect] in
-        var gridROIs = [CGRect]()
-        for i in 0...8 {
-            for j in 0...8 {
-                gridROIs.append(
-                    CGRect(origin:
-                            CGPoint(
-                                x: Double(i)/9.0 + 0.01,
-                                y: Double(j)/9.0 + 0.01
-                            ),
-                           size: sizeROI
-                    )
-                )
+    private let textRecognizer = TextRecognizer.textRecognizer()
+    
+    public func detect(_ image: CIImage, completionHandler: @escaping ([DigitDetectorResult]) -> ()) {
+        let context = CIContext()
+        let cgImage = context.createCGImage(image, from: image.extent)
+        let fixedCroppedUIImage = UIImage(cgImage: cgImage!)
+        croppedPreviewImage = fixedCroppedUIImage
+        let fixedCroppedVisionImage = VisionImage(image: fixedCroppedUIImage)
+        fixedCroppedVisionImage.orientation = fixedCroppedUIImage.imageOrientation
+        textRecognizer.process(fixedCroppedVisionImage) { result, error in
+            guard error == nil, let result = result else {
+                // Error handling
+                return
             }
-        }
-        return gridROIs
-    }()
-    
-    init() {
-        guard let mlModel = try? MNIST(configuration: .init()).model,
-              let detector = try? VNCoreMLModel(for: mlModel) else {
-            print("Failed to load detector!")
-            self.detector = nil
-            return
-        }
-        self.detector = detector
-    }
-    
-    public func detect(_ image: CIImage) -> [DigitDetectorResult] {
-        let fixedImage = image //.oriented(CGImagePropertyOrientation.downMirrored)
-        let cropRect = VNImageRectForNormalizedRect(DigitDetector.singleROI,
-                                                    Int(fixedImage.extent.width),
-                                                    Int(fixedImage.extent.height))
-        let croppedImage = fixedImage.cropped(to: cropRect)
-//        croppedPreviewImage = UIImage(ciImage: croppedImage)
-        let transform = CGAffineTransform.identity
-            .translatedBy(x: -cropRect.origin.x,
-                          y: -cropRect.origin.y)
-        let fixedCroppedImage = croppedImage.transformed(by: transform)
-        croppedPreviewImage = UIImage(ciImage: fixedCroppedImage)
-        let imageRequestHandler = VNImageRequestHandler(ciImage: fixedCroppedImage, orientation: .up, options: [:])
-        do {
-            var digits = [DigitDetectorResult]()
-            for singleCellROI in [DigitDetector.singleROI] {
-                let mlRequest = VNCoreMLRequest(model: detector)
-//                mlRequest.regionOfInterest = singleCellROI
-                try imageRequestHandler.perform([mlRequest])
-                if let textObservations = mlRequest.results as? [VNClassificationObservation] {
-                    var highestConfidenceTextObservation: VNClassificationObservation? = nil
-                    for textObservation in textObservations {
-                        if let highestConfidenceObservation = highestConfidenceTextObservation {
-                            if textObservation.confidence > highestConfidenceObservation.confidence {
-                                highestConfidenceTextObservation = textObservation
-                            }
-                        }
-                        else {
-                            highestConfidenceTextObservation = textObservation
-                        }
-                    }
-                    if let highestConfidenceObservation = highestConfidenceTextObservation,
-                       highestConfidenceObservation.confidence > 0.9 {
-                        let result = DigitDetectorResult(
-                            row: Int(9.0 * singleCellROI.origin.x),
-                            column: Int(9.0 * singleCellROI.origin.y),
-                            digit: highestConfidenceObservation.identifier
+            var digitDetectorResults = [DigitDetectorResult]()
+            for block in result.blocks {
+                for line in block.lines {
+                    for element in line.elements {
+                        let origin = element.cornerPoints[0].cgPointValue
+                        let detectorResult = DigitDetectorResult(
+                            row: Int(9.0 * ((origin.y / image.extent.height) + 0.02)),
+                            column: Int(9.0 * ((origin.x / image.extent.width) + 0.02)),
+                            digit: element.text
                         )
-                        digits.append(result)
+                        digitDetectorResults.append(detectorResult)
+                        print("element \(detectorResult.digit) \(detectorResult.row) \(detectorResult.column)")
                     }
                 }
             }
-            return digits
-            
-        } catch {
-            print("imageRequestHandler error")
+            completionHandler(digitDetectorResults)
         }
-            
-            
-//        do {
-//            let request = VNCoreMLRequest(model: detector)
-//            try imageRequestHandler.perform([request])
-//            if let textObservations = request.results as? [VNRecognizedObjectObservation] {
-//                var digits = [CGRect]()
-//                for observation in textObservations {
-//                    if observation.confidence > 0.1 {
-//                        digits.append(observation.boundingBox)
-//                        print("Observed \(observation.labels[0]) with confidence \(observation.confidence)")
-//                    }
-//                }
-//                return digits
-//            }
-//            else {
-//                print("No digit Observations")
-//            }
-//        } catch {
-//            print("imageRequestHandler error")
-//        }
-        return []
     }
 }
 

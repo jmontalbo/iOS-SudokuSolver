@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		26837211FA64C7CD482D450A /* libPods-SudokuSolver.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 276038650615667FD3B345C5 /* libPods-SudokuSolver.a */; };
 		F3683BF725E849D100B84929 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3683BF625E849D100B84929 /* AppDelegate.swift */; };
 		F3683BF925E849D100B84929 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3683BF825E849D100B84929 /* SceneDelegate.swift */; };
 		F3683BFB25E849D100B84929 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3683BFA25E849D100B84929 /* ViewController.swift */; };
@@ -23,6 +24,15 @@
 		F3E5EDAC2607FD50001D986E /* singleDigit0.png in Resources */ = {isa = PBXBuildFile; fileRef = F3E5EDAB2607FD50001D986E /* singleDigit0.png */; };
 		F3E5EDC026082804001D986E /* singleDigit2.png in Resources */ = {isa = PBXBuildFile; fileRef = F3E5EDBF26082804001D986E /* singleDigit2.png */; };
 		F3E5EDC826082954001D986E /* multiDigits587.png in Resources */ = {isa = PBXBuildFile; fileRef = F3E5EDC726082954001D986E /* multiDigits587.png */; };
+		F3F9B2E4261279C4009EDE47 /* UpperLeftCorner1.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2E3261279C4009EDE47 /* UpperLeftCorner1.png */; };
+		F3F9B2EA26127A5B009EDE47 /* MiddleBox3.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2E926127A5B009EDE47 /* MiddleBox3.png */; };
+		F3F9B2F026157CC2009EDE47 /* MiddleBox3Clean.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2EF26157CC2009EDE47 /* MiddleBox3Clean.png */; };
+		F3F9B2F626157D5F009EDE47 /* UpperLeftCorner1Clean.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2F526157D5F009EDE47 /* UpperLeftCorner1Clean.png */; };
+		F3F9B2FC261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = F3F9B2FB261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel */; };
+		F3F9B3002616732D009EDE47 /* MiddleBox3CleanLowSat.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2FF2616732D009EDE47 /* MiddleBox3CleanLowSat.png */; };
+		F3F9B306261674A3009EDE47 /* singleDigit0HiContrast.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B305261674A3009EDE47 /* singleDigit0HiContrast.png */; };
+		F3F9B30C261674F7009EDE47 /* singleDigit0CleanHiContr.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B30B261674F7009EDE47 /* singleDigit0CleanHiContr.png */; };
+		F3F9B3122616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B3112616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +46,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		18DE2B4FA6A758320B0DF88E /* Pods-SudokuSolver.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudokuSolver.debug.xcconfig"; path = "Target Support Files/Pods-SudokuSolver/Pods-SudokuSolver.debug.xcconfig"; sourceTree = "<group>"; };
+		276038650615667FD3B345C5 /* libPods-SudokuSolver.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SudokuSolver.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		61B9A0844960941D4C2EE3C5 /* Pods-SudokuSolver.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SudokuSolver.release.xcconfig"; path = "Target Support Files/Pods-SudokuSolver/Pods-SudokuSolver.release.xcconfig"; sourceTree = "<group>"; };
 		F3683BF325E849D100B84929 /* SudokuSolver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SudokuSolver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3683BF625E849D100B84929 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F3683BF825E849D100B84929 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -56,6 +69,15 @@
 		F3E5EDAB2607FD50001D986E /* singleDigit0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleDigit0.png; sourceTree = "<group>"; };
 		F3E5EDBF26082804001D986E /* singleDigit2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleDigit2.png; sourceTree = "<group>"; };
 		F3E5EDC726082954001D986E /* multiDigits587.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = multiDigits587.png; sourceTree = "<group>"; };
+		F3F9B2E3261279C4009EDE47 /* UpperLeftCorner1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UpperLeftCorner1.png; sourceTree = SOURCE_ROOT; };
+		F3F9B2E926127A5B009EDE47 /* MiddleBox3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MiddleBox3.png; sourceTree = SOURCE_ROOT; };
+		F3F9B2EF26157CC2009EDE47 /* MiddleBox3Clean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MiddleBox3Clean.png; sourceTree = SOURCE_ROOT; };
+		F3F9B2F526157D5F009EDE47 /* UpperLeftCorner1Clean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UpperLeftCorner1Clean.png; sourceTree = SOURCE_ROOT; };
+		F3F9B2FB261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = MNISTClassifierApple20210401.mlmodel; sourceTree = "<group>"; };
+		F3F9B2FF2616732D009EDE47 /* MiddleBox3CleanLowSat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MiddleBox3CleanLowSat.png; sourceTree = SOURCE_ROOT; };
+		F3F9B305261674A3009EDE47 /* singleDigit0HiContrast.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleDigit0HiContrast.png; sourceTree = SOURCE_ROOT; };
+		F3F9B30B261674F7009EDE47 /* singleDigit0CleanHiContr.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleDigit0CleanHiContr.png; sourceTree = SOURCE_ROOT; };
+		F3F9B3112616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MiddleBox3CleanHiCLowSat.png; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26837211FA64C7CD482D450A /* libPods-SudokuSolver.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,12 +99,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		667869DA3A5D0781F2ED7A8C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				18DE2B4FA6A758320B0DF88E /* Pods-SudokuSolver.debug.xcconfig */,
+				61B9A0844960941D4C2EE3C5 /* Pods-SudokuSolver.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		CC14890705A7BD0AB0A2812D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				276038650615667FD3B345C5 /* libPods-SudokuSolver.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F3683BEA25E849D100B84929 = {
 			isa = PBXGroup;
 			children = (
 				F3683BF525E849D100B84929 /* SudokuSolver */,
 				F3683C0C25E849D200B84929 /* SudokuSolverTests */,
 				F3683BF425E849D100B84929 /* Products */,
+				667869DA3A5D0781F2ED7A8C /* Pods */,
+				CC14890705A7BD0AB0A2812D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -108,6 +151,7 @@
 				F3683C0125E849D200B84929 /* LaunchScreen.storyboard */,
 				F3683C0425E849D200B84929 /* Info.plist */,
 				F399FA14260411B1009EC34D /* MNIST.mlmodel */,
+				F3F9B2FB261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel */,
 			);
 			path = SudokuSolver;
 			sourceTree = "<group>";
@@ -120,6 +164,14 @@
 				F3E5EDBF26082804001D986E /* singleDigit2.png */,
 				F3B94CDD260D386600AC1622 /* puzzle1.png */,
 				F3B94CE3260D4AD200AC1622 /* Puzzle4.png */,
+				F3F9B2E926127A5B009EDE47 /* MiddleBox3.png */,
+				F3F9B2FF2616732D009EDE47 /* MiddleBox3CleanLowSat.png */,
+				F3F9B305261674A3009EDE47 /* singleDigit0HiContrast.png */,
+				F3F9B30B261674F7009EDE47 /* singleDigit0CleanHiContr.png */,
+				F3F9B2EF26157CC2009EDE47 /* MiddleBox3Clean.png */,
+				F3F9B2E3261279C4009EDE47 /* UpperLeftCorner1.png */,
+				F3F9B3112616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png */,
+				F3F9B2F526157D5F009EDE47 /* UpperLeftCorner1Clean.png */,
 				F3E5EDC726082954001D986E /* multiDigits587.png */,
 				F3683C0F25E849D200B84929 /* Info.plist */,
 			);
@@ -133,9 +185,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F3683C1D25E849D200B84929 /* Build configuration list for PBXNativeTarget "SudokuSolver" */;
 			buildPhases = (
+				F76664202C3D1CD7502F8AB6 /* [CP] Check Pods Manifest.lock */,
 				F3683BEF25E849D100B84929 /* Sources */,
 				F3683BF025E849D100B84929 /* Frameworks */,
 				F3683BF125E849D100B84929 /* Resources */,
+				CA1129D6B5E93FA47089E725 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -216,21 +270,72 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3F9B30C261674F7009EDE47 /* singleDigit0CleanHiContr.png in Resources */,
+				F3F9B2EA26127A5B009EDE47 /* MiddleBox3.png in Resources */,
+				F3F9B3122616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png in Resources */,
+				F3F9B2E4261279C4009EDE47 /* UpperLeftCorner1.png in Resources */,
+				F3F9B3002616732D009EDE47 /* MiddleBox3CleanLowSat.png in Resources */,
 				F3E5EDC826082954001D986E /* multiDigits587.png in Resources */,
 				F3B94CDE260D386600AC1622 /* puzzle1.png in Resources */,
+				F3F9B2F026157CC2009EDE47 /* MiddleBox3Clean.png in Resources */,
+				F3F9B306261674A3009EDE47 /* singleDigit0HiContrast.png in Resources */,
 				F3E5EDC026082804001D986E /* singleDigit2.png in Resources */,
 				F3B94CE4260D4AD200AC1622 /* Puzzle4.png in Resources */,
+				F3F9B2F626157D5F009EDE47 /* UpperLeftCorner1Clean.png in Resources */,
 				F3E5EDAC2607FD50001D986E /* singleDigit0.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		CA1129D6B5E93FA47089E725 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SudokuSolver/Pods-SudokuSolver-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SudokuSolver/Pods-SudokuSolver-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SudokuSolver/Pods-SudokuSolver-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F76664202C3D1CD7502F8AB6 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SudokuSolver-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		F3683BEF25E849D100B84929 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3F9B2FC261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel in Sources */,
 				F3E5EDA12607FAAF001D986E /* DigitDetector.swift in Sources */,
 				F399FA15260411B1009EC34D /* MNIST.mlmodel in Sources */,
 				F3C15B0D25F19B1700A999CB /* MainViewModel.swift in Sources */,
@@ -397,6 +502,7 @@
 		};
 		F3683C1E25E849D200B84929 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 18DE2B4FA6A758320B0DF88E /* Pods-SudokuSolver.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -416,6 +522,7 @@
 		};
 		F3683C1F25E849D200B84929 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 61B9A0844960941D4C2EE3C5 /* Pods-SudokuSolver.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

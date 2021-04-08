@@ -94,13 +94,13 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                 .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
 //            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
             let visionModel = DigitDetector()
-            let digitObservation = visionModel.detect(croppedImage.transformed(by: transform))
-            print("observed digit \(digitObservation)")
+            visionModel.detect(croppedImage.transformed(by: transform)) {_ in return}
+//            print("observed digit \(digitObservation)")
             capturedPreviewImage = visionModel.croppedPreviewImage
         }
-        else {
-            print("observation is nil")
-        }
+//        else {
+//            print("observation is nil")
+//        }
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
