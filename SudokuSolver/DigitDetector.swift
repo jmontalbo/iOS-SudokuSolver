@@ -25,7 +25,16 @@ class DigitDetector {
         let fixedCroppedVisionImage = VisionImage(image: fixedCroppedUIImage)
         fixedCroppedVisionImage.orientation = fixedCroppedUIImage.imageOrientation
         textRecognizer.process(fixedCroppedVisionImage) { result, error in
-            guard error == nil, let result = result else {
+            guard
+                error == nil,
+                let result = result,
+                image.extent.height > 0.0,
+                image.extent.width > 0.0,
+                image.extent.height.isFinite,
+                image.extent.width.isFinite,
+                !image.extent.height.isNaN,
+                !image.extent.width.isNaN
+                else {
                 // Error handling
                 return
             }
@@ -33,17 +42,32 @@ class DigitDetector {
             for block in result.blocks {
                 for line in block.lines {
                     for element in line.elements {
-                        let origin = element.cornerPoints[0].cgPointValue
-                        let detectorResult = DigitDetectorResult(
-                            row: Int(9.0 * ((origin.y / image.extent.height) + 0.02)),
-                            column: Int(9.0 * ((origin.x / image.extent.width) + 0.02)),
-                            digit: element.text
-                        )
-                        digitDetectorResults.append(detectorResult)
-                        print("element \(detectorResult.digit) \(detectorResult.row) \(detectorResult.column)")
+                        let filteredText = element.text.components(separatedBy: CharacterSet.decimalDigits.inverted)
+                                    .joined()
+                        if filteredText.count == 0 {
+                            continue
+                        }
+                        let center = CGPoint(
+                            x: element.frame.origin.x + element.frame.size.width /
+                                (2.0 * CGFloat(filteredText.count)),
+                            y: element.frame.midY)
+                        let row = Int(9.0 * ((center.y / image.extent.height)))
+                        var column = Int(9.0 * ((center.x / image.extent.width)))
+                        for character in filteredText {
+                            let detectorResult = DigitDetectorResult(
+                                row: row,
+                                column: column,
+                                digit: String(character)
+                            )
+                            digitDetectorResults.append(detectorResult)
+//                            print("element \(detectorResult.digit) \(detectorResult.row) \(detectorResult.column) element.text \(element.text) frame \(element.frame) midX \(element.frame.midX) midY \(element.frame.midY) extent \(image.extent)")
+                            column = column + 1
+                        }
+
                     }
                 }
             }
+            print(digitDetectorResults.count)
             completionHandler(digitDetectorResults)
         }
     }
