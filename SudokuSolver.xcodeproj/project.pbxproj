@@ -27,6 +27,8 @@
 		F3F732AA2623ABAA0021EEAB /* Puzzle2Cropped.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F732A92623ABAA0021EEAB /* Puzzle2Cropped.png */; };
 		F3F732B02623C08C0021EEAB /* Puzzle3Cropped.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F732AF2623C08C0021EEAB /* Puzzle3Cropped.png */; };
 		F3F732B62623C8930021EEAB /* puzzleImage.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F732B52623C8930021EEAB /* puzzleImage.png */; };
+		F3F732BA2623D63C0021EEAB /* PuzzleSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F732B92623D63C0021EEAB /* PuzzleSolver.swift */; };
+		F3F732BE2628FBB60021EEAB /* PuzzleSolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F732BD2628FBB60021EEAB /* PuzzleSolverTests.swift */; };
 		F3F9B2E4261279C4009EDE47 /* UpperLeftCorner1.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2E3261279C4009EDE47 /* UpperLeftCorner1.png */; };
 		F3F9B2EA26127A5B009EDE47 /* MiddleBox3.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2E926127A5B009EDE47 /* MiddleBox3.png */; };
 		F3F9B2F026157CC2009EDE47 /* MiddleBox3Clean.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2EF26157CC2009EDE47 /* MiddleBox3Clean.png */; };
@@ -75,6 +77,8 @@
 		F3F732A92623ABAA0021EEAB /* Puzzle2Cropped.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Puzzle2Cropped.png; sourceTree = SOURCE_ROOT; };
 		F3F732AF2623C08C0021EEAB /* Puzzle3Cropped.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Puzzle3Cropped.png; sourceTree = SOURCE_ROOT; };
 		F3F732B52623C8930021EEAB /* puzzleImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = puzzleImage.png; sourceTree = SOURCE_ROOT; };
+		F3F732B92623D63C0021EEAB /* PuzzleSolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleSolver.swift; sourceTree = "<group>"; };
+		F3F732BD2628FBB60021EEAB /* PuzzleSolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleSolverTests.swift; sourceTree = "<group>"; };
 		F3F9B2E3261279C4009EDE47 /* UpperLeftCorner1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UpperLeftCorner1.png; sourceTree = SOURCE_ROOT; };
 		F3F9B2E926127A5B009EDE47 /* MiddleBox3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MiddleBox3.png; sourceTree = SOURCE_ROOT; };
 		F3F9B2EF26157CC2009EDE47 /* MiddleBox3Clean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MiddleBox3Clean.png; sourceTree = SOURCE_ROOT; };
@@ -157,6 +161,7 @@
 				F3683C0425E849D200B84929 /* Info.plist */,
 				F399FA14260411B1009EC34D /* MNIST.mlmodel */,
 				F3F9B2FB261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel */,
+				F3F732B92623D63C0021EEAB /* PuzzleSolver.swift */,
 			);
 			path = SudokuSolver;
 			sourceTree = "<group>";
@@ -166,6 +171,7 @@
 			children = (
 				F3F732B52623C8930021EEAB /* puzzleImage.png */,
 				F3E5ED9B2607F4F1001D986E /* DigitDetectorTests.swift */,
+				F3F732BD2628FBB60021EEAB /* PuzzleSolverTests.swift */,
 				F3E5EDAB2607FD50001D986E /* singleDigit0.png */,
 				F3E5EDBF26082804001D986E /* singleDigit2.png */,
 				F3B94CDD260D386600AC1622 /* puzzle1.png */,
@@ -353,6 +359,7 @@
 				F3683BFB25E849D100B84929 /* ViewController.swift in Sources */,
 				F3683C2A25EC6AC500B84929 /* VideoPreviewView.swift in Sources */,
 				F3683BF725E849D100B84929 /* AppDelegate.swift in Sources */,
+				F3F732BA2623D63C0021EEAB /* PuzzleSolver.swift in Sources */,
 				F3683BF925E849D100B84929 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -362,6 +369,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3E5ED9C2607F4F1001D986E /* DigitDetectorTests.swift in Sources */,
+				F3F732BE2628FBB60021EEAB /* PuzzleSolverTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
