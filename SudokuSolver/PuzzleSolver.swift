@@ -73,7 +73,6 @@ class PuzzleSolver {
         return self.emptyCells.count == 0
     }
 
-
     private func findBlankCell() -> CellCoordinate? {
         var cellToFillIn: CellCoordinate? = nil
         var minimumCandidateCount = Int.max

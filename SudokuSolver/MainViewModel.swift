@@ -22,6 +22,8 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     private let videoDataOutputQueue = DispatchQueue(label: "com.JDM.videoDataOutputQueue")
     private let imageProcessingQueue = DispatchQueue(label: "com.JDM.imageProcessingQueue")
     private var visionModel: VNCoreMLModel? = nil
+    private let digitDetector = DigitDetector()
+    private let puzzleDetector = PuzzleDetector()
     
     override init() {
         
@@ -93,14 +95,24 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             let transform = CGAffineTransform.identity
                 .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
 //            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
-            let visionModel = DigitDetector()
-            visionModel.detect(croppedImage.transformed(by: transform)) {_ in return}
+//            let visionModel = DigitDetector()
+            digitDetector.detect(croppedImage.transformed(by: transform)) {
+                detectedDigits in
+                guard let detectedPuzzle = self.puzzleDetector.detect(digits: detectedDigits) else {
+                    return
+                }
+                let puzzleSolver = PuzzleSolver(puzzle: detectedPuzzle)
+                let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: puzzleSolver)
+                if solvedPuzzle.isSolved() {
+                    print("puzzle is solved \(solvedPuzzle.puzzle)")
+                }
+                else {
+                    print("puzzle not solved")
+                }
+            }
 //            print("observed digit \(digitObservation)")
-            capturedPreviewImage = visionModel.croppedPreviewImage
+            capturedPreviewImage = digitDetector.croppedPreviewImage
         }
-//        else {
-//            print("observation is nil")
-//        }
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
@@ -117,7 +129,6 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     func captureOutput(_ captureOutput: AVCaptureOutput,
                        didDrop sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection) {
-//        print("Sample Buffer Dropped.")
     }
     
 }

@@ -16,6 +16,7 @@ class DigitDetector {
     
     public var croppedPreviewImage = UIImage()
     private let textRecognizer = TextRecognizer.textRecognizer()
+    private var rawDigitHistory = [[DigitDetectorResult]]()
     
     public func detect(_ image: CIImage, completionHandler: @escaping ([DigitDetectorResult]) -> ()) {
         let context = CIContext()
@@ -38,7 +39,7 @@ class DigitDetector {
                 // Error handling
                 return
             }
-            var digitDetectorResults = [DigitDetectorResult]()
+            var rawDigitDetectorResults = [DigitDetectorResult]()
             for block in result.blocks {
                 for line in block.lines {
                     for element in line.elements {
@@ -54,27 +55,49 @@ class DigitDetector {
                         let row = Int(9.0 * ((center.y / image.extent.height)))
                         var column = Int(9.0 * ((center.x / image.extent.width)))
                         for character in filteredText {
+                            guard let digit = Int(String(character)) else {
+                                continue
+                            }
                             let detectorResult = DigitDetectorResult(
                                 row: row,
                                 column: column,
-                                digit: String(character)
+                                digit: digit
                             )
-                            digitDetectorResults.append(detectorResult)
-//                            print("element \(detectorResult.digit) \(detectorResult.row) \(detectorResult.column) element.text \(element.text) frame \(element.frame) midX \(element.frame.midX) midY \(element.frame.midY) extent \(image.extent)")
+                            rawDigitDetectorResults.append(detectorResult)
                             column = column + 1
                         }
-
                     }
                 }
             }
+            self.rawDigitHistory.append(rawDigitDetectorResults)
+            if self.rawDigitHistory.count > 5 {
+                self.rawDigitHistory.remove(at: 0)
+            }
+            var digitVotes = [DigitDetectorResult:Int]()
+            for rawDigitHistoryEntry in self.rawDigitHistory {
+                for rawDigit in rawDigitHistoryEntry {
+                    guard let currentDigitVotes = digitVotes[rawDigit] else {
+                        digitVotes[rawDigit] = 1
+                        continue
+                    }
+                    digitVotes[rawDigit] =  currentDigitVotes + 1
+                }
+            }
+            var digitDetectorResults = [DigitDetectorResult]()
+            for (digitDetectorResult, votes) in digitVotes {
+                if votes > 2 {
+                    digitDetectorResults.append(digitDetectorResult)
+                }
+            }
             print(digitDetectorResults.count)
+            print(digitVotes)
             completionHandler(digitDetectorResults)
         }
     }
 }
 
-struct DigitDetectorResult {
+struct DigitDetectorResult: Hashable {
     let row: Int
     let column: Int
-    let digit: String
+    let digit: Int
 }
