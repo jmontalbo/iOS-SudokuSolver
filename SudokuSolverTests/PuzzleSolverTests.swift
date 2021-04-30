@@ -51,24 +51,41 @@ class PuzzleSolverTests: XCTestCase {
         XCTAssertFalse(testPuzzle.isSolved())
     }
     
-    func test_expandedStates_returnsSomeStatesForUnsolvedPuzzle(){
-        let unSolvedPuzzle = [
-            [5,3,0,0,7,0,0,0,0],
-            [6,0,0,1,9,5,0,0,0],
-            [0,9,8,0,0,0,0,6,0],
-            [8,0,0,0,6,0,0,0,3],
-            [4,0,0,8,0,3,0,0,1],
-            [7,0,0,0,2,0,0,0,6],
-            [0,6,0,0,0,0,2,8,0],
-            [0,0,0,4,1,9,0,0,5],
-            [0,0,0,0,8,0,0,7,9]
-        ]
-        let testPuzzle = PuzzleSolver(puzzle: unSolvedPuzzle)
-        let expandedStates = testPuzzle.expandedStates()
-        XCTAssertGreaterThan(expandedStates.count, 0)
-    }
+//    func test_expandedStates_returnsSomeStatesForUnsolvedPuzzle(){
+//        let unSolvedPuzzle = [
+//            [5,3,0,0,7,0,0,0,0],
+//            [6,0,0,1,9,5,0,0,0],
+//            [0,9,8,0,0,0,0,6,0],
+//            [8,0,0,0,6,0,0,0,3],
+//            [4,0,0,8,0,3,0,0,1],
+//            [7,0,0,0,2,0,0,0,6],
+//            [0,6,0,0,0,0,2,8,0],
+//            [0,0,0,4,1,9,0,0,5],
+//            [0,0,0,0,8,0,0,7,9]
+//        ]
+//        let testPuzzle = PuzzleSolver(puzzle: unSolvedPuzzle)
+//        let expandedStates = testPuzzle.expandedStates()
+//        XCTAssertGreaterThan(expandedStates.count, 0)
+//    }
     
-    func testCellCandidatesReturnsSomeCandidatesForCell(){
+//    func testCellCandidatesReturnsSomeCandidatesForCell(){
+//        let unSolvedPuzzle = [
+//            [5,3,0,0,7,0,0,0,0],
+//            [6,0,0,1,9,5,0,0,0],
+//            [0,9,8,0,0,0,0,6,0],
+//            [8,0,0,0,6,0,0,0,3],
+//            [4,0,0,8,0,3,0,0,1],
+//            [7,0,0,0,2,0,0,0,6],
+//            [0,6,0,0,0,0,2,8,0],
+//            [0,0,0,4,1,9,0,0,5],
+//            [0,0,0,0,8,0,0,7,9]
+//        ]
+//        let testPuzzle = PuzzleSolver(puzzle: unSolvedPuzzle)
+//        let candidates = testPuzzle.candidatesForCell(cell: CellCoordinate(row: 0, col: 2))
+//        XCTAssertEqual(candidates, [1, 2, 4])
+//    }
+    
+    func testCellCandidatesReturnsMoreCandidatesForCell(){
         let unSolvedPuzzle = [
             [5,3,0,0,7,0,0,0,0],
             [6,0,0,1,9,5,0,0,0],
@@ -81,8 +98,8 @@ class PuzzleSolverTests: XCTestCase {
             [0,0,0,0,8,0,0,7,9]
         ]
         let testPuzzle = PuzzleSolver(puzzle: unSolvedPuzzle)
-        let candidates = testPuzzle.candidatesForCell(cell: CellCoordinate(row: 0, col: 2))
-        XCTAssertEqual(candidates, [1, 2, 4])
+        let candidates = testPuzzle.candidatesForCell(cell: CellCoordinate(row: 0, col: 8))
+        XCTAssertEqual(candidates, [2, 4, 8])
     }
     
     func test_expandedStates_returnsNoStateForSolvedPuzzle() {

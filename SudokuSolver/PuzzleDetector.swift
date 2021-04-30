@@ -10,6 +10,7 @@ import Foundation
 class PuzzleDetector {
     
     private var detectedPuzzles = [[[Int]]]()
+    private var lastPuzzleReturned = [[Int]](repeating: [Int](repeating: 0, count: 9), count: 9)
     
     func detect(digits: [DigitDetectorResult]) -> [[Int]]? {
         guard digits.count > 16 else {
@@ -36,10 +37,13 @@ class PuzzleDetector {
             }
             puzzleVotes[puzzle] = currentPuzzleVotes + 1
             if currentPuzzleVotes + 1 > 2 {
-                return puzzle
+                if puzzle != lastPuzzleReturned {
+// need to test
+                    lastPuzzleReturned = puzzle
+                    return puzzle
+                }
             }
         }
-//        print(puzzleVotes)
         return nil
     }
 }

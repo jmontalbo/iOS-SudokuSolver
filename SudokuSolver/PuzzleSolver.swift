@@ -32,33 +32,9 @@ import UIKit
 
 class PuzzleSolver {
     var puzzle = [[Int]]()
-    var rows = [[Int]]()
-    var cols = [[Int]]()
-    var boxs = [[Int]]()
     var emptyCells = [CellCoordinate:[Int]]()
     init(puzzle: [[Int]]) {
         self.puzzle = puzzle
-        self.rows = self.puzzle
-        for i in 0...8 {
-            var result = [Int]()
-            for c in 0...8 {
-                result.append(self.puzzle[c][i])
-            }
-            self.cols.append(result)
-        }
-        
-        for j in 0...2 {
-            for k in 0...2 {
-                var result = [Int]()
-                for y in 0...2 {
-                    for x in 0...2 {
-                        result.append(self.puzzle[y+j*3][x+k*3])
-                    }
-                }
-                self.boxs.append(result)
-            }
-        }
-        
         for r in 0...8 {
             for c in 0...8 {
                 if self.puzzle[r][c] == 0 {
@@ -87,17 +63,27 @@ class PuzzleSolver {
 
     public func candidatesForCell(cell: CellCoordinate) -> [Int] {
         var candidates = [1,2,3,4,5,6,7,8,9]
-        let candidateRows = self.rows[cell.row]
-        let candidateCols = self.cols[cell.col]
-        let candidateBoxs = self.boxs[Int(cell.col/3) + 3 * Int(cell.row/3)]
-        for j in 1...9 {
-            if candidateRows.contains(j) && candidates.contains(j) { candidates = candidates.filter(){$0 != j} }
-            if candidateCols.contains(j) && candidates.contains(j) { candidates = candidates.filter(){$0 != j} }
-            if candidateBoxs.contains(j) && candidates.contains(j) { candidates = candidates.filter(){$0 != j} }
+        for colIndex in 0...8 {
+            if let index = candidates.firstIndex(of: puzzle[cell.row][colIndex]){
+                candidates.remove(at: index)
+            }
+        }
+        for rowIndex in 0...8 {
+            if let index = candidates.firstIndex(of: puzzle[rowIndex][cell.col]){
+                candidates.remove(at: index)
+            }
+        }
+        let boxOriginRow = (cell.row / 3) * 3
+        let boxOriginCol = (cell.col / 3) * 3
+        for boxRowIndex in boxOriginRow...boxOriginRow + 2 {
+            for boxColIndex in boxOriginCol...boxOriginCol + 2 {
+                if let index = candidates.firstIndex(of: puzzle[boxRowIndex][boxColIndex]){
+                    candidates.remove(at: index)
+                }
+            }
         }
         return candidates
     }
-
 
     public func expandedStates() -> [PuzzleSolver] {
         var expandedStates = [PuzzleSolver]()
@@ -147,11 +133,4 @@ class PuzzleSolver {
 struct CellCoordinate: Hashable {
     var row: Int
     var col: Int
-//    static func == (lhs: CellCoordinate, rhs: CellCoordinate) -> Bool {
-//        return lhs.row == rhs.row && lhs.col == rhs.col
-//    }
-//    func hash(into hasher: inout Hasher) {
-//        hasher.combine(row)
-//        hasher.combine(col)
-//    }
 }
