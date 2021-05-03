@@ -81,7 +81,7 @@ struct Puzzle: Equatable {
         
         set {
             assert(row < 9 && row >= 0 && column < 9 && column >= 0, "Index out of range")
-            assert(newValue < 10 && newValue > 0, "Value out of range")
+            assert(newValue < 10 && newValue >= 0, "Value out of range")
             switch row {
             case 0:
                 row0 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
