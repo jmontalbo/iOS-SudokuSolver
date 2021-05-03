@@ -30,7 +30,7 @@ import UIKit
 //#
 //#
 
-class PuzzleSolver {
+struct Puzzle {
     var puzzle = [[Int]]()
     var emptyCells = [CellCoordinate:[Int]]()
     init(puzzle: [[Int]]) {
@@ -85,8 +85,8 @@ class PuzzleSolver {
         return candidates
     }
 
-    public func expandedStates() -> [PuzzleSolver] {
-        var expandedStates = [PuzzleSolver]()
+    public func expandedStates() -> [Puzzle] {
+        var expandedStates = [Puzzle]()
         let blankCell = self.findBlankCell()
         guard let cell = blankCell else {
             return expandedStates
@@ -95,7 +95,7 @@ class PuzzleSolver {
         for candidate in candidatesForCell {
             var puzzleToFillOut = self.puzzle
             puzzleToFillOut[cell.row][cell.col] = candidate
-            expandedStates.append(PuzzleSolver(puzzle: puzzleToFillOut))
+            expandedStates.append(Puzzle(puzzle: puzzleToFillOut))
         }
         return expandedStates
     }
@@ -116,8 +116,10 @@ class PuzzleSolver {
 //        return puzzleString
 //
 //
-    
-    static public func solvePuzzle(puzzle: PuzzleSolver) -> PuzzleSolver {
+}
+
+final class PuzzleSolver {
+    static public func solvePuzzle(puzzle: Puzzle) -> Puzzle {
         var puzzleContainer = [puzzle]
         while puzzleContainer.count > 0 {
             let puzzleToEvaluate = puzzleContainer.removeLast()

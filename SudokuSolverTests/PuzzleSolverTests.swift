@@ -31,7 +31,7 @@ class PuzzleSolverTests: XCTestCase {
             [2,8,7,4,1,9,6,3,5],
             [3,4,5,2,8,6,1,7,9]
         ]
-        let testPuzzle = PuzzleSolver(puzzle: solvedPuzzle)
+        let testPuzzle = Puzzle(puzzle: solvedPuzzle)
         XCTAssertTrue(testPuzzle.isSolved())
     }
     
@@ -47,7 +47,7 @@ class PuzzleSolverTests: XCTestCase {
             [2,8,7,4,1,9,6,3,5],
             [3,4,5,2,8,6,1,7,9]
         ]
-        let testPuzzle = PuzzleSolver(puzzle: unSolvedPuzzle)
+        let testPuzzle = Puzzle(puzzle: unSolvedPuzzle)
         XCTAssertFalse(testPuzzle.isSolved())
     }
     
@@ -97,7 +97,7 @@ class PuzzleSolverTests: XCTestCase {
             [0,0,0,4,1,9,0,0,5],
             [0,0,0,0,8,0,0,7,9]
         ]
-        let testPuzzle = PuzzleSolver(puzzle: unSolvedPuzzle)
+        let testPuzzle = Puzzle(puzzle: unSolvedPuzzle)
         let candidates = testPuzzle.candidatesForCell(cell: CellCoordinate(row: 0, col: 8))
         XCTAssertEqual(candidates, [2, 4, 8])
     }
@@ -114,7 +114,7 @@ class PuzzleSolverTests: XCTestCase {
             [2,8,7,4,1,9,6,3,5],
             [3,4,5,2,8,6,1,7,9]
         ]
-        let testPuzzle = PuzzleSolver(puzzle: solvedPuzzle)
+        let testPuzzle = Puzzle(puzzle: solvedPuzzle)
         let expandedStates = testPuzzle.expandedStates()
         XCTAssertEqual(expandedStates.count, 0)
     }
@@ -143,9 +143,12 @@ class PuzzleSolverTests: XCTestCase {
             [2,8,7,4,1,9,6,3,5],
             [3,4,5,2,8,6,1,7,9]
         ]
-        let testPuzzle = PuzzleSolver(puzzle: unSolvedPuzzle)
-        let actualSolvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: testPuzzle)
-        XCTAssertEqual(actualSolvedPuzzle.puzzle, expectedSolvedPuzzle)
+        let testPuzzle = Puzzle(puzzle: unSolvedPuzzle)
+        var actualSolvedPuzzle: Puzzle? = nil
+        measure {
+            actualSolvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: testPuzzle)
+        }
+        XCTAssertEqual(actualSolvedPuzzle!.puzzle, expectedSolvedPuzzle)
     }
     
     func test_HardUnSolvedPuzzleCanBeSolved(){
@@ -172,9 +175,12 @@ class PuzzleSolverTests: XCTestCase {
             [6,9,1,8,4,2,5,3,7],
             [8,4,3,6,7,5,9,2,1]
         ]
-        let testPuzzle = PuzzleSolver(puzzle: unSolvedPuzzle)
-        let actualSolvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: testPuzzle)
-        XCTAssertEqual(actualSolvedPuzzle.puzzle, expectedSolvedPuzzle)
+        let testPuzzle = Puzzle(puzzle: unSolvedPuzzle)
+        var actualSolvedPuzzle: Puzzle? = nil
+        measure {
+            actualSolvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: testPuzzle)
+        }
+        XCTAssertEqual(actualSolvedPuzzle!.puzzle, expectedSolvedPuzzle)
     }
     
     func test_HardestUnSolvedPuzzleCanBeSolved() {
@@ -202,8 +208,11 @@ class PuzzleSolverTests: XCTestCase {
             [7,9,6,3,1,8,4,5,2]
         ]
         
-        let testPuzzle = PuzzleSolver(puzzle: unSolvedPuzzle)
-        let actualSolvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: testPuzzle)
-        XCTAssertEqual(actualSolvedPuzzle.puzzle, expectedSolvedPuzzle)
+        let testPuzzle = Puzzle(puzzle: unSolvedPuzzle)
+        var actualSolvedPuzzle: Puzzle? = nil
+        measure {
+            actualSolvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: testPuzzle)
+        }
+        XCTAssertEqual(actualSolvedPuzzle!.puzzle, expectedSolvedPuzzle)
     }
 }

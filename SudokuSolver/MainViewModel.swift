@@ -101,8 +101,8 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                 guard let detectedPuzzle = self.puzzleDetector.detect(digits: detectedDigits) else {
                     return
                 }
-                let puzzleSolver = PuzzleSolver(puzzle: detectedPuzzle)
-                let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: puzzleSolver)
+                let puzzle = Puzzle(puzzle: detectedPuzzle)
+                let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: puzzle)
                 if solvedPuzzle.isSolved() {
                     print("puzzle is solved \(solvedPuzzle.puzzle)")
                 }
