@@ -122,7 +122,14 @@ struct Puzzle: Equatable {
 
     
     public func isSolved() -> Bool {
-        return emptyCells().count == 0
+        for row in 0...8 {
+            for col in 0...8 {
+                if self[row, col] == 0 {
+                    return false
+                }
+            }
+        }
+        return true
     }
 
     private func findBlankCell() -> CellCoordinate? {
