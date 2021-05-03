@@ -89,8 +89,8 @@ class DigitDetector {
                     digitDetectorResults.append(digitDetectorResult)
                 }
             }
-            print(digitDetectorResults.count)
-            print(digitVotes)
+//            print(digitDetectorResults.count)
+//            print(digitVotes)
             completionHandler(digitDetectorResults)
         }
     }

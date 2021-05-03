@@ -30,29 +30,133 @@ import UIKit
 //#
 //#
 
-class PuzzleSolver {
-    var puzzle = [[Int]]()
-    var emptyCells = [CellCoordinate:[Int]]()
+struct Puzzle: Equatable {
+    fileprivate var row0 = 0
+    fileprivate var row1 = 0
+    fileprivate var row2 = 0
+    fileprivate var row3 = 0
+    fileprivate var row4 = 0
+    fileprivate var row5 = 0
+    fileprivate var row6 = 0
+    fileprivate var row7 = 0
+    fileprivate var row8 = 0
+    private var emptyCells = [CellCoordinate:[Int]]()
     init(puzzle: [[Int]]) {
-        self.puzzle = puzzle
-        for r in 0...8 {
-            for c in 0...8 {
-                if self.puzzle[r][c] == 0 {
-                    let cellCoordinate = CellCoordinate(row: r, col: c)
+        assert(puzzle.count == 9)
+        assert(puzzle[0].count == 9)
+        for row in 0...8 {
+            for col in 0...8 {
+                self[row, col] = puzzle[row][col]
+            }
+        }
+        for row in 0...8 {
+            for col in 0...8 {
+                if self[row, col] == 0 {
+                    let cellCoordinate = CellCoordinate(row: row, col: col)
                     self.emptyCells[cellCoordinate] = self.candidatesForCell(cell: cellCoordinate)
                 }
             }
         }
     }
+    
+    init(row0: Int, row1: Int, row2: Int, row3: Int, row4: Int, row5: Int, row6: Int, row7: Int, row8: Int){
+        self.row0 = row0
+        self.row1 = row1
+        self.row2 = row2
+        self.row3 = row3
+        self.row4 = row4
+        self.row5 = row5
+        self.row6 = row6
+        self.row7 = row7
+        self.row8 = row8
+        for row in 0...8 {
+            for col in 0...8 {
+                if self[row, col] == 0 {
+                    let cellCoordinate = CellCoordinate(row: row, col: col)
+                    self.emptyCells[cellCoordinate] = self.candidatesForCell(cell: cellCoordinate)
+                }
+            }
+        }
+    }
+    
+    subscript(row: Int, column: Int) -> Int {
+        get {
+            assert(row < 9 && row >= 0 && column < 9 && column >= 0, "Index out of range")
+            switch row {
+            case 0:
+                return row0 / (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue % 10
+            case 1:
+                return row1 / (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue % 10
+            case 2:
+                return row2 / (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue % 10
+            case 3:
+                return row3 / (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue % 10
+            case 4:
+                return row4 / (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue % 10
+            case 5:
+                return row5 / (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue % 10
+            case 6:
+                return row6 / (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue % 10
+            case 7:
+                return row7 / (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue % 10
+            case 8:
+                return row8 / (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue % 10
+            default:
+                assertionFailure()
+                return 0
+            }
+        }
+        
+        set {
+            assert(row < 9 && row >= 0 && column < 9 && column >= 0, "Index out of range")
+            assert(newValue < 10 && newValue > 0, "Value out of range")
+            switch row {
+            case 0:
+                row0 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
+            case 1:
+                row1 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
+            case 2:
+                row2 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
+            case 3:
+                row3 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
+            case 4:
+                row4 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
+            case 5:
+                row5 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
+            case 6:
+                row6 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
+            case 7:
+                row7 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
+            case 8:
+                row8 += (pow(10, (9 - column - 1)) as NSDecimalNumber).intValue * newValue
+            default:
+                assertionFailure()
+            }
+        }
+    }
 
+    static func == (lhs: Puzzle, rhs: Puzzle) -> Bool {
+        return
+            lhs.row0 == rhs.row0 &&
+            lhs.row1 == rhs.row1 &&
+            lhs.row2 == rhs.row2 &&
+            lhs.row3 == rhs.row3 &&
+            lhs.row4 == rhs.row4 &&
+            lhs.row5 == rhs.row5 &&
+            lhs.row6 == rhs.row6 &&
+            lhs.row7 == rhs.row7 &&
+            lhs.row8 == rhs.row8
+        
+    }
+    
     public func isSolved() -> Bool {
-        return self.emptyCells.count == 0
+        return emptyCells.count == 0
     }
 
     private func findBlankCell() -> CellCoordinate? {
         var cellToFillIn: CellCoordinate? = nil
         var minimumCandidateCount = Int.max
-        for (cell, candidates) in self.emptyCells {
+        for (cell, candidates) in emptyCells {
             if candidates.count < minimumCandidateCount {
                 cellToFillIn = cell
                 minimumCandidateCount = candidates.count
@@ -64,12 +168,12 @@ class PuzzleSolver {
     public func candidatesForCell(cell: CellCoordinate) -> [Int] {
         var candidates = [1,2,3,4,5,6,7,8,9]
         for colIndex in 0...8 {
-            if let index = candidates.firstIndex(of: puzzle[cell.row][colIndex]){
+            if let index = candidates.firstIndex(of: self[cell.row, colIndex]){
                 candidates.remove(at: index)
             }
         }
         for rowIndex in 0...8 {
-            if let index = candidates.firstIndex(of: puzzle[rowIndex][cell.col]){
+            if let index = candidates.firstIndex(of: self[rowIndex, cell.col]){
                 candidates.remove(at: index)
             }
         }
@@ -77,7 +181,7 @@ class PuzzleSolver {
         let boxOriginCol = (cell.col / 3) * 3
         for boxRowIndex in boxOriginRow...boxOriginRow + 2 {
             for boxColIndex in boxOriginCol...boxOriginCol + 2 {
-                if let index = candidates.firstIndex(of: puzzle[boxRowIndex][boxColIndex]){
+                if let index = candidates.firstIndex(of: self[boxRowIndex, boxColIndex]){
                     candidates.remove(at: index)
                 }
             }
@@ -85,17 +189,17 @@ class PuzzleSolver {
         return candidates
     }
 
-    public func expandedStates() -> [PuzzleSolver] {
-        var expandedStates = [PuzzleSolver]()
-        let blankCell = self.findBlankCell()
+    public func expandedStates() -> [Puzzle] {
+        var expandedStates = [Puzzle]()
+        let blankCell = findBlankCell()
         guard let cell = blankCell else {
             return expandedStates
         }
-        let candidatesForCell = self.candidatesForCell(cell: cell)
-        for candidate in candidatesForCell {
-            var puzzleToFillOut = self.puzzle
-            puzzleToFillOut[cell.row][cell.col] = candidate
-            expandedStates.append(PuzzleSolver(puzzle: puzzleToFillOut))
+        let candidates = candidatesForCell(cell: cell)
+        for candidate in candidates {
+            var puzzleToFillOut = self
+            puzzleToFillOut[cell.row, cell.col] = candidate
+            expandedStates.append(puzzleToFillOut)
         }
         return expandedStates
     }
@@ -117,7 +221,10 @@ class PuzzleSolver {
 //
 //
     
-    static public func solvePuzzle(puzzle: PuzzleSolver) -> PuzzleSolver {
+}
+
+final class PuzzleSolver {
+    static public func solvePuzzle(puzzle: Puzzle) -> Puzzle {
         var puzzleContainer = [puzzle]
         while puzzleContainer.count > 0 {
             let puzzleToEvaluate = puzzleContainer.removeLast()
