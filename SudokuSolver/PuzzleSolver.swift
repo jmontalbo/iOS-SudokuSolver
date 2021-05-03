@@ -31,16 +31,15 @@ import UIKit
 //#
 
 struct Puzzle: Equatable {
-    fileprivate var row0 = 0
-    fileprivate var row1 = 0
-    fileprivate var row2 = 0
-    fileprivate var row3 = 0
-    fileprivate var row4 = 0
-    fileprivate var row5 = 0
-    fileprivate var row6 = 0
-    fileprivate var row7 = 0
-    fileprivate var row8 = 0
-    private var emptyCells = [CellCoordinate:[Int]]()
+    private var row0 = 0
+    private var row1 = 0
+    private var row2 = 0
+    private var row3 = 0
+    private var row4 = 0
+    private var row5 = 0
+    private var row6 = 0
+    private var row7 = 0
+    private var row8 = 0
     init(puzzle: [[Int]]) {
         assert(puzzle.count == 9)
         assert(puzzle[0].count == 9)
@@ -49,34 +48,7 @@ struct Puzzle: Equatable {
                 self[row, col] = puzzle[row][col]
             }
         }
-        for row in 0...8 {
-            for col in 0...8 {
-                if self[row, col] == 0 {
-                    let cellCoordinate = CellCoordinate(row: row, col: col)
-                    self.emptyCells[cellCoordinate] = self.candidatesForCell(cell: cellCoordinate)
-                }
-            }
-        }
-    }
-    
-    init(row0: Int, row1: Int, row2: Int, row3: Int, row4: Int, row5: Int, row6: Int, row7: Int, row8: Int){
-        self.row0 = row0
-        self.row1 = row1
-        self.row2 = row2
-        self.row3 = row3
-        self.row4 = row4
-        self.row5 = row5
-        self.row6 = row6
-        self.row7 = row7
-        self.row8 = row8
-        for row in 0...8 {
-            for col in 0...8 {
-                if self[row, col] == 0 {
-                    let cellCoordinate = CellCoordinate(row: row, col: col)
-                    self.emptyCells[cellCoordinate] = self.candidatesForCell(cell: cellCoordinate)
-                }
-            }
-        }
+
     }
     
     subscript(row: Int, column: Int) -> Int {
@@ -134,29 +106,29 @@ struct Puzzle: Equatable {
             }
         }
     }
-
-    static func == (lhs: Puzzle, rhs: Puzzle) -> Bool {
-        return
-            lhs.row0 == rhs.row0 &&
-            lhs.row1 == rhs.row1 &&
-            lhs.row2 == rhs.row2 &&
-            lhs.row3 == rhs.row3 &&
-            lhs.row4 == rhs.row4 &&
-            lhs.row5 == rhs.row5 &&
-            lhs.row6 == rhs.row6 &&
-            lhs.row7 == rhs.row7 &&
-            lhs.row8 == rhs.row8
-        
+    
+    private func emptyCells() -> [CellCoordinate:[Int]] {
+        var result = [CellCoordinate:[Int]]()
+        for row in 0...8 {
+            for col in 0...8 {
+                if self[row, col] == 0 {
+                    let cellCoordinate = CellCoordinate(row: row, col: col)
+                    result[cellCoordinate] = self.candidatesForCell(cell: cellCoordinate)
+                }
+            }
+        }
+        return result
     }
+
     
     public func isSolved() -> Bool {
-        return emptyCells.count == 0
+        return emptyCells().count == 0
     }
 
     private func findBlankCell() -> CellCoordinate? {
         var cellToFillIn: CellCoordinate? = nil
         var minimumCandidateCount = Int.max
-        for (cell, candidates) in emptyCells {
+        for (cell, candidates) in emptyCells() {
             if candidates.count < minimumCandidateCount {
                 cellToFillIn = cell
                 minimumCandidateCount = candidates.count
