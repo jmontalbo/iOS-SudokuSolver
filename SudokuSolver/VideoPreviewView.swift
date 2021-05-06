@@ -10,8 +10,9 @@ import Vision
 
 class VideoPreviewView: UIView {
     
-    private var boxLayer = [CAShapeLayer]()
+    private var boxLayer = [CALayer]()
     private var visionToAVFTransform = CGAffineTransform.identity
+    private var puzzleDigitLabels = [UILabel]()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer {
         guard let layer = layer as? AVCaptureVideoPreviewLayer else {
             fatalError("Expected `AVCaptureVideoPreviewLayer` type for layer. Check PreviewView.layerClass implementation.")
@@ -32,11 +33,11 @@ class VideoPreviewView: UIView {
         return AVCaptureVideoPreviewLayer.self
     }
     
-    func show(rectangles: [VNRectangleObservation]) {
+    func show(puzzles: [DetectedPuzzle]) {
         DispatchQueue.main.async {
             self.removeBoxes()
-            for rectangle in rectangles {
-                self.draw(rect: rectangle)
+            for puzzle in puzzles {
+                self.draw(puzzle: puzzle)
             }
         }
     }
@@ -45,8 +46,13 @@ class VideoPreviewView: UIView {
             layer.removeFromSuperlayer()
         }
         boxLayer.removeAll()
+        for label in puzzleDigitLabels {
+            label.removeFromSuperview()
+        }
+        puzzleDigitLabels.removeAll()
     }
-    private func draw(rect: VNRectangleObservation) {
+    private func draw(puzzle: DetectedPuzzle) {
+        let rect = puzzle.rect
         let layer = CAShapeLayer()
         layer.opacity = 0.25
         layer.strokeColor = UIColor.green.cgColor
@@ -56,14 +62,34 @@ class VideoPreviewView: UIView {
             .scaledBy(x: 1, y: -1)
             .scaledBy(x: videoPreviewLayer.bounds.size.width, y: videoPreviewLayer.bounds.size.height)
             .translatedBy(x: 0, y: -1)
-        linePath.move(to: rect.topLeft.applying(transform))
-        linePath.addLine(to: rect.topRight.applying(transform))
-        linePath.addLine(to: rect.bottomRight.applying(transform))
-        linePath.addLine(to: rect.bottomLeft.applying(transform))
-        linePath.addLine(to: rect.topLeft.applying(transform))
+        let unNormalizedTopLeft = rect.topLeft.applying(transform)
+        let unNormalizedTopRight = rect.topRight.applying(transform)
+        let unNormalizedBottomLeft = rect.bottomLeft.applying(transform)
+        let unNormalizedBottomRight = rect.bottomRight.applying(transform)
+        linePath.move(to: unNormalizedTopLeft)
+        linePath.addLine(to: unNormalizedTopRight)
+        linePath.addLine(to: unNormalizedBottomRight)
+        linePath.addLine(to: unNormalizedBottomLeft)
+        linePath.addLine(to: unNormalizedTopLeft)
         linePath.close()
         layer.path = linePath.cgPath
         boxLayer.append(layer)
         videoPreviewLayer.insertSublayer(layer, at: 1)
+        let cellWidth = (unNormalizedTopRight.x - unNormalizedTopLeft.x) / 9.0
+        let cellHeight = (unNormalizedBottomRight.y - unNormalizedTopRight.y) / 9.0
+        for row in 0...8 {
+            for col in 0...8 {
+                let cellOriginX = unNormalizedTopLeft.x + (cellWidth * CGFloat(col))
+                let cellOriginY = unNormalizedTopLeft.y + (cellWidth * CGFloat(row))
+                let label = UILabel(frame: CGRect(x: cellOriginX, y: cellOriginY, width: cellWidth, height: cellHeight))
+                label.text = String(puzzle.digits[row][col])
+                label.textColor = UIColor.white
+                label.font = UIFont.boldSystemFont(ofSize: 15)
+                label.textAlignment = .center
+                addSubview(label)
+                bringSubviewToFront(label)
+                puzzleDigitLabels.append(label)
+            }
+        }
     }
 }

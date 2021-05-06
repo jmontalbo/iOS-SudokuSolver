@@ -32,6 +32,7 @@ class ViewController: UIViewController {
 
         capturedView.contentMode = .scaleToFill
         capturedView.backgroundColor = .black
+        capturedView.isHidden = true // make false to see capturedView for debug
         view.addSubview(capturedView)
         capturedView.translatesAutoresizingMaskIntoConstraints = false
         capturedView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
@@ -46,8 +47,8 @@ class ViewController: UIViewController {
             .sink(receiveValue: setPreviewImage)
     }
     
-    private func show(puzzles: [VNRectangleObservation]) {
-        previewView.show(rectangles: puzzles)
+    private func show(puzzles: [DetectedPuzzle]) {
+        previewView.show(puzzles: puzzles)
     }
     
     private func setPreviewImage(image: UIImage) {

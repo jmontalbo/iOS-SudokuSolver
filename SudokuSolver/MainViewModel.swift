@@ -14,7 +14,7 @@ import UIKit
 class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     let session = AVCaptureSession()
-    @Published private(set) var detectedPuzzles = [VNRectangleObservation]()
+    @Published private(set) var detectedPuzzles = [DetectedPuzzle]()
     @Published private(set) var capturedPreviewImage = UIImage()
     private var capturedCancellable: AnyCancellable? = nil
     
@@ -89,13 +89,12 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         
         if let rectObservations = rectangleDetectionRequest.results as? [VNRectangleObservation],
            let firstRectObservation = rectObservations.first {
-            detectedPuzzles = rectObservations
             let cropRect = VNImageRectForNormalizedRect(firstRectObservation.boundingBox, Int(image.extent.width), Int(image.extent.height))
             let croppedImage = image.cropped(to: cropRect)
             let transform = CGAffineTransform.identity
                 .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-//            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
-//            let visionModel = DigitDetector()
+            //            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
+            //            let visionModel = DigitDetector()
             digitDetector.detect(croppedImage.transformed(by: transform)) {
                 detectedDigits in
                 guard let detectedPuzzle = self.puzzleDetector.detect(digits: detectedDigits) else {
@@ -105,6 +104,7 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                 let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: puzzle)
                 if solvedPuzzle.isSolved() {
                     print("puzzle is solved \(solvedPuzzle.puzzle)")
+                    self.detectedPuzzles = [DetectedPuzzle(rect: firstRectObservation, digits: solvedPuzzle.puzzle)]
                 }
                 else {
                     print("puzzle not solved")
@@ -131,4 +131,9 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                        from connection: AVCaptureConnection) {
     }
     
+}
+
+struct DetectedPuzzle {
+    var rect: VNRectangleObservation
+    var digits: [[Int]]
 }
