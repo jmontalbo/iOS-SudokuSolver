@@ -24,6 +24,7 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     private var visionModel: VNCoreMLModel? = nil
     private let digitDetector = DigitDetector()
     private let puzzleDetector = PuzzleDetector()
+    private var trackedRectangles = [UUID : VNRectangleObservation]()
     
     override init() {
         
@@ -89,6 +90,7 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         
         if let rectObservations = rectangleDetectionRequest.results as? [VNRectangleObservation],
            let firstRectObservation = rectObservations.first {
+//            detectedPuzzles = [DetectedPuzzle(rect: firstRectObservation, solvedPuzzle: nil, unSolvedPuzzle: nil)]
             let cropRect = VNImageRectForNormalizedRect(firstRectObservation.boundingBox, Int(image.extent.width), Int(image.extent.height))
             let croppedImage = image.cropped(to: cropRect)
             let transform = CGAffineTransform.identity
@@ -104,15 +106,21 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                 let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: puzzle)
                 if solvedPuzzle.isSolved() {
                     print("puzzle is solved \(solvedPuzzle.puzzle)")
-                    self.detectedPuzzles = [DetectedPuzzle(rect: firstRectObservation, digits: solvedPuzzle.puzzle)]
+                    self.imageProcessingQueue.async {
+                        self.detectedPuzzles =
+                            [DetectedPuzzle(rect: firstRectObservation, solvedPuzzle: solvedPuzzle.puzzle, unSolvedPuzzle: detectedPuzzle)]
+                    }
                 }
                 else {
                     print("puzzle not solved")
                 }
             }
+        }
+        
+
 //            print("observed digit \(digitObservation)")
             capturedPreviewImage = digitDetector.croppedPreviewImage
-        }
+        
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
@@ -130,10 +138,10 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                        didDrop sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection) {
     }
-    
 }
 
 struct DetectedPuzzle {
     var rect: VNRectangleObservation
-    var digits: [[Int]]
+    var solvedPuzzle: [[Int]]?
+    var unSolvedPuzzle: [[Int]]?
 }

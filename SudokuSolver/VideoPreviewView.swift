@@ -75,20 +75,25 @@ class VideoPreviewView: UIView {
         layer.path = linePath.cgPath
         boxLayer.append(layer)
         videoPreviewLayer.insertSublayer(layer, at: 1)
+        guard let solvedPuzzle = puzzle.solvedPuzzle, let unSolvedPuzzle = puzzle.unSolvedPuzzle else {
+            return
+        }
         let cellWidth = (unNormalizedTopRight.x - unNormalizedTopLeft.x) / 9.0
         let cellHeight = (unNormalizedBottomRight.y - unNormalizedTopRight.y) / 9.0
         for row in 0...8 {
             for col in 0...8 {
-                let cellOriginX = unNormalizedTopLeft.x + (cellWidth * CGFloat(col))
-                let cellOriginY = unNormalizedTopLeft.y + (cellWidth * CGFloat(row))
-                let label = UILabel(frame: CGRect(x: cellOriginX, y: cellOriginY, width: cellWidth, height: cellHeight))
-                label.text = String(puzzle.digits[row][col])
-                label.textColor = UIColor.white
-                label.font = UIFont.boldSystemFont(ofSize: 15)
-                label.textAlignment = .center
-                addSubview(label)
-                bringSubviewToFront(label)
-                puzzleDigitLabels.append(label)
+                if solvedPuzzle[row][col] != unSolvedPuzzle[row][col] {
+                    let cellOriginX = unNormalizedTopLeft.x + (cellWidth * CGFloat(col))
+                    let cellOriginY = unNormalizedTopLeft.y + (cellWidth * CGFloat(row))
+                    let label = UILabel(frame: CGRect(x: cellOriginX, y: cellOriginY, width: cellWidth, height: cellHeight))
+                    label.text = String(solvedPuzzle[row][col])
+                    label.textColor = UIColor.white
+                    label.font = UIFont.boldSystemFont(ofSize: 15)
+                    label.textAlignment = .center
+                    addSubview(label)
+                    bringSubviewToFront(label)
+                    puzzleDigitLabels.append(label)
+                }
             }
         }
     }
