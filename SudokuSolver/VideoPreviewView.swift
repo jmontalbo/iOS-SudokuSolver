@@ -33,10 +33,10 @@ class VideoPreviewView: UIView {
         return AVCaptureVideoPreviewLayer.self
     }
     
-    func show(puzzles: [DetectedPuzzle]) {
+    func show(puzzles: [UUID : DetectedPuzzle]) {
         DispatchQueue.main.async {
             self.removeBoxes()
-            for puzzle in puzzles {
+            for (_, puzzle) in puzzles {
                 self.draw(puzzle: puzzle)
             }
         }

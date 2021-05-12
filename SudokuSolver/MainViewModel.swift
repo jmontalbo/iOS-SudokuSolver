@@ -14,7 +14,7 @@ import UIKit
 class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     let session = AVCaptureSession()
-    @Published private(set) var detectedPuzzles = [DetectedPuzzle]()
+    @Published private(set) var detectedPuzzles = [UUID: DetectedPuzzle]()
     @Published private(set) var capturedPreviewImage = UIImage()
     private var capturedCancellable: AnyCancellable? = nil
     
@@ -22,9 +22,11 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     private let videoDataOutputQueue = DispatchQueue(label: "com.JDM.videoDataOutputQueue")
     private let imageProcessingQueue = DispatchQueue(label: "com.JDM.imageProcessingQueue")
     private var visionModel: VNCoreMLModel? = nil
+    private let rectangleDetector = RectangleDetector()
     private let digitDetector = DigitDetector()
     private let puzzleDetector = PuzzleDetector()
-    private var trackedRectangles = [UUID : VNRectangleObservation]()
+    //    private var trackedRectangles = [UUID : VNRectangleObservation]()
+    
     
     override init() {
         
@@ -73,54 +75,38 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         guard let imageBuffer = capturedFrame.imageBuffer else {
             return
         }
+        detectedPuzzles.removeAll()
         let image = CIImage(cvPixelBuffer: imageBuffer)
-        let imageRequestHandler = VNImageRequestHandler(ciImage: image, options: [:])
-        let rectangleDetectionRequest = VNDetectRectanglesRequest()
-        //        rectangleDetectionRequest.minimumConfidence = VNConfidence(0.8)
-        rectangleDetectionRequest.minimumAspectRatio = VNAspectRatio(0.95)
-        rectangleDetectionRequest.maximumAspectRatio = VNAspectRatio(1.05)
-        rectangleDetectionRequest.minimumSize = Float(0.3)
-        rectangleDetectionRequest.maximumObservations = Int(10)
-        
-        do {
-            try imageRequestHandler.perform([rectangleDetectionRequest])
-        } catch {
-            print("imageRequestHandler error")
+        let detectedRectangles = rectangleDetector.detectRectangles(image: image)
+        guard let detectedRectangle = detectedRectangles.first else {
+            return
         }
         
-        if let rectObservations = rectangleDetectionRequest.results as? [VNRectangleObservation],
-           let firstRectObservation = rectObservations.first {
-//            detectedPuzzles = [DetectedPuzzle(rect: firstRectObservation, solvedPuzzle: nil, unSolvedPuzzle: nil)]
-            let cropRect = VNImageRectForNormalizedRect(firstRectObservation.boundingBox, Int(image.extent.width), Int(image.extent.height))
-            let croppedImage = image.cropped(to: cropRect)
-            let transform = CGAffineTransform.identity
-                .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-            //            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
-            //            let visionModel = DigitDetector()
-            digitDetector.detect(croppedImage.transformed(by: transform)) {
-                detectedDigits in
-                guard let detectedPuzzle = self.puzzleDetector.detect(digits: detectedDigits) else {
-                    return
-                }
-                let puzzle = Puzzle(puzzle: detectedPuzzle)
-                let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: puzzle)
-                if solvedPuzzle.isSolved() {
-                    print("puzzle is solved \(solvedPuzzle.puzzle)")
-                    self.imageProcessingQueue.async {
-                        self.detectedPuzzles =
-                            [DetectedPuzzle(rect: firstRectObservation, solvedPuzzle: solvedPuzzle.puzzle, unSolvedPuzzle: detectedPuzzle)]
-                    }
-                }
-                else {
-                    print("puzzle not solved")
+        let cropRect = VNImageRectForNormalizedRect(detectedRectangle.value.boundingBox, Int(image.extent.width), Int(image.extent.height))
+        let croppedImage = image.cropped(to: cropRect)
+        let transform = CGAffineTransform.identity
+            .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
+        //            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
+        //            let visionModel = DigitDetector()
+        digitDetector.detect(croppedImage.transformed(by: transform)) {
+            detectedDigits in
+            guard let detectedPuzzle = self.puzzleDetector.detect(digits: detectedDigits) else {
+                return
+            }
+            let puzzle = Puzzle(puzzle: detectedPuzzle)
+            let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: puzzle)
+            if solvedPuzzle.isSolved() {
+                print("puzzle is solved \(solvedPuzzle.puzzle)")
+                self.imageProcessingQueue.async {
+                    self.detectedPuzzles[detectedRectangle.key] =
+                        DetectedPuzzle(rect: detectedRectangle.value, solvedPuzzle: solvedPuzzle.puzzle, unSolvedPuzzle: detectedPuzzle)
                 }
             }
+            else {
+                print("puzzle not solved")
+            }
         }
-        
-
-//            print("observed digit \(digitObservation)")
-            capturedPreviewImage = digitDetector.croppedPreviewImage
-        
+        capturedPreviewImage = digitDetector.croppedPreviewImage
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
@@ -131,7 +117,6 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         if error == noErr {
             capturedFramesSubject.send(copySampleBuffer!)
         }
-        
     }
     
     func captureOutput(_ captureOutput: AVCaptureOutput,

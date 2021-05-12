@@ -47,7 +47,7 @@ class ViewController: UIViewController {
             .sink(receiveValue: setPreviewImage)
     }
     
-    private func show(puzzles: [DetectedPuzzle]) {
+    private func show(puzzles: [UUID : DetectedPuzzle]) {
         previewView.show(puzzles: puzzles)
     }
     
