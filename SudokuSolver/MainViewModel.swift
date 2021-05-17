@@ -75,19 +75,38 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         guard let imageBuffer = capturedFrame.imageBuffer else {
             return
         }
-        detectedPuzzles.removeAll()
+
         let image = CIImage(cvPixelBuffer: imageBuffer)
         let detectedRectangles = rectangleDetector.detectRectangles(image: image)
         guard let detectedRectangle = detectedRectangles.first else {
+            detectedPuzzles.removeAll()
             return
         }
         
+        if let existingDetectedPuzzle = detectedPuzzles[detectedRectangle.key] {
+            let updatedDetectedPuzzle = DetectedPuzzle(
+                rect: detectedRectangle.value,
+                solvedPuzzle: existingDetectedPuzzle.solvedPuzzle,
+                unSolvedPuzzle: existingDetectedPuzzle.unSolvedPuzzle
+            )
+            detectedPuzzles[detectedRectangle.key] = updatedDetectedPuzzle
+//            if existingDetectedPuzzle.solvedPuzzle != nil {
+//                return
+//            }
+        } else {
+            detectedPuzzles.removeAll()
+            detectedPuzzles[detectedRectangle.key] = DetectedPuzzle(
+                rect: detectedRectangle.value,
+                solvedPuzzle: nil,
+                unSolvedPuzzle: nil
+            )
+        }
+
         let cropRect = VNImageRectForNormalizedRect(detectedRectangle.value.boundingBox, Int(image.extent.width), Int(image.extent.height))
         let croppedImage = image.cropped(to: cropRect)
         let transform = CGAffineTransform.identity
             .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-        //            capturedPreviewImage = UIImage(ciImage: croppedImage.transformed(by: transform))
-        //            let visionModel = DigitDetector()
+        
         digitDetector.detect(croppedImage.transformed(by: transform)) {
             detectedDigits in
             guard let detectedPuzzle = self.puzzleDetector.detect(digits: detectedDigits) else {

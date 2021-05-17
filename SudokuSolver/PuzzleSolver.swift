@@ -99,31 +99,19 @@ struct Puzzle {
         }
         return expandedStates
     }
-
-
-//    def __str__(self):
-//        puzzleString = ""
-//        blankCell = self.__findBlankCell()
-//        puzzleCopy = copy.deepcopy(self.puzzle)
-//        if blankCell is not None:
-//            puzzleCopy[blankCell[0]][blankCell[1]] = Fore.GREEN + "X" + Style.RESET_ALL
-//        for lines in puzzleCopy:
-//            lineStr = [str(line) for line in lines]
-//            puzzleString += " ".join(lineStr) + "\n"
-//        if blankCell is not None:
-//            candidatesStr = "X ?= " + str(self.__candidatesForCell(blankCell)) + "\n"
-//            puzzleString += candidatesStr
-//        return puzzleString
-//
-//
 }
 
 final class PuzzleSolver {
+    static var solvedPuzzleCache = [[[Int]]: Puzzle]()
     static public func solvePuzzle(puzzle: Puzzle) -> Puzzle {
+        if let cachedPuzzle = solvedPuzzleCache[puzzle.puzzle] {
+            return cachedPuzzle
+        }
         var puzzleContainer = [puzzle]
         while puzzleContainer.count > 0 {
             let puzzleToEvaluate = puzzleContainer.removeLast()
-            if puzzleToEvaluate.isSolved(){
+            if puzzleToEvaluate.isSolved() {
+                solvedPuzzleCache[puzzle.puzzle] = puzzleToEvaluate
                 return puzzleToEvaluate
             }
             puzzleContainer.append(contentsOf: puzzleToEvaluate.expandedStates())

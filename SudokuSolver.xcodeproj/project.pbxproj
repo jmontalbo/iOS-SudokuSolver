@@ -21,6 +21,10 @@
 		F3B94CDE260D386600AC1622 /* puzzle1.png in Resources */ = {isa = PBXBuildFile; fileRef = F3B94CDD260D386600AC1622 /* puzzle1.png */; };
 		F3B94CE4260D4AD200AC1622 /* Puzzle4.png in Resources */ = {isa = PBXBuildFile; fileRef = F3B94CE3260D4AD200AC1622 /* Puzzle4.png */; };
 		F3C15B0D25F19B1700A999CB /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C15B0C25F19B1700A999CB /* MainViewModel.swift */; };
+		F3C9A7142651CA4A00244EA7 /* IMG_2744.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F3C9A7102651CA4A00244EA7 /* IMG_2744.MOV */; };
+		F3C9A7152651CA4A00244EA7 /* IMG_2745.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F3C9A7112651CA4A00244EA7 /* IMG_2745.MOV */; };
+		F3C9A71A2651CA8600244EA7 /* RectangleDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C9A7192651CA8600244EA7 /* RectangleDetectorTests.swift */; };
+		F3C9A71E2651CCDB00244EA7 /* VideoReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C9A71D2651CCDB00244EA7 /* VideoReader.swift */; };
 		F3E5ED9C2607F4F1001D986E /* DigitDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E5ED9B2607F4F1001D986E /* DigitDetectorTests.swift */; };
 		F3E5EDA12607FAAF001D986E /* DigitDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E5EDA02607FAAF001D986E /* DigitDetector.swift */; };
 		F3E5EDAC2607FD50001D986E /* singleDigit0.png in Resources */ = {isa = PBXBuildFile; fileRef = F3E5EDAB2607FD50001D986E /* singleDigit0.png */; };
@@ -73,6 +77,10 @@
 		F3B94CDD260D386600AC1622 /* puzzle1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = puzzle1.png; sourceTree = SOURCE_ROOT; };
 		F3B94CE3260D4AD200AC1622 /* Puzzle4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Puzzle4.png; sourceTree = SOURCE_ROOT; };
 		F3C15B0C25F19B1700A999CB /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		F3C9A7102651CA4A00244EA7 /* IMG_2744.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_2744.MOV; sourceTree = "<group>"; };
+		F3C9A7112651CA4A00244EA7 /* IMG_2745.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_2745.MOV; sourceTree = "<group>"; };
+		F3C9A7192651CA8600244EA7 /* RectangleDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangleDetectorTests.swift; sourceTree = "<group>"; };
+		F3C9A71D2651CCDB00244EA7 /* VideoReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoReader.swift; sourceTree = "<group>"; };
 		F3E5ED9B2607F4F1001D986E /* DigitDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigitDetectorTests.swift; sourceTree = "<group>"; };
 		F3E5EDA02607FAAF001D986E /* DigitDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigitDetector.swift; sourceTree = "<group>"; };
 		F3E5EDAB2607FD50001D986E /* singleDigit0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleDigit0.png; sourceTree = "<group>"; };
@@ -178,6 +186,8 @@
 				F3F732B52623C8930021EEAB /* puzzleImage.png */,
 				F3E5ED9B2607F4F1001D986E /* DigitDetectorTests.swift */,
 				F3F732BD2628FBB60021EEAB /* PuzzleSolverTests.swift */,
+				F3C9A7192651CA8600244EA7 /* RectangleDetectorTests.swift */,
+				F3C9A71D2651CCDB00244EA7 /* VideoReader.swift */,
 				F3E5EDAB2607FD50001D986E /* singleDigit0.png */,
 				F3E5EDBF26082804001D986E /* singleDigit2.png */,
 				F3B94CDD260D386600AC1622 /* puzzle1.png */,
@@ -192,6 +202,8 @@
 				F3F9B2E3261279C4009EDE47 /* UpperLeftCorner1.png */,
 				F3F9B3112616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png */,
 				F3F9B2F526157D5F009EDE47 /* UpperLeftCorner1Clean.png */,
+				F3C9A7102651CA4A00244EA7 /* IMG_2744.MOV */,
+				F3C9A7112651CA4A00244EA7 /* IMG_2745.MOV */,
 				F3E5EDC726082954001D986E /* multiDigits587.png */,
 				F3683C0F25E849D200B84929 /* Info.plist */,
 			);
@@ -291,8 +303,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3F9B30C261674F7009EDE47 /* singleDigit0CleanHiContr.png in Resources */,
+				F3C9A7142651CA4A00244EA7 /* IMG_2744.MOV in Resources */,
 				F3F9B2EA26127A5B009EDE47 /* MiddleBox3.png in Resources */,
 				F3F9B3122616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png in Resources */,
+				F3C9A7152651CA4A00244EA7 /* IMG_2745.MOV in Resources */,
 				F3F9B2E4261279C4009EDE47 /* UpperLeftCorner1.png in Resources */,
 				F3F732AA2623ABAA0021EEAB /* Puzzle2Cropped.png in Resources */,
 				F3F9B3002616732D009EDE47 /* MiddleBox3CleanLowSat.png in Resources */,
@@ -378,6 +392,8 @@
 			files = (
 				F3E5ED9C2607F4F1001D986E /* DigitDetectorTests.swift in Sources */,
 				F3F732BE2628FBB60021EEAB /* PuzzleSolverTests.swift in Sources */,
+				F3C9A71E2651CCDB00244EA7 /* VideoReader.swift in Sources */,
+				F3C9A71A2651CA8600244EA7 /* RectangleDetectorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
