@@ -33,7 +33,7 @@ class VideoPreviewView: UIView {
         return AVCaptureVideoPreviewLayer.self
     }
     
-    func show(puzzles: [UUID : DetectedPuzzle]) {
+    func show(puzzles: [UUID : MainViewModel.DetectedPuzzle]) {
         DispatchQueue.main.async {
             self.removeBoxes()
             for (_, puzzle) in puzzles {
@@ -51,7 +51,7 @@ class VideoPreviewView: UIView {
         }
         puzzleDigitLabels.removeAll()
     }
-    private func draw(puzzle: DetectedPuzzle) {
+    private func draw(puzzle: MainViewModel.DetectedPuzzle) {
         let rect = puzzle.rect
         let layer = CAShapeLayer()
         layer.opacity = 0.25

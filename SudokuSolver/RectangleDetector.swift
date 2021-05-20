@@ -16,6 +16,8 @@ class RectangleDetector {
     private var rectangleTrackingRequest: VNTrackRectangleRequest? = nil
     private var sequenceRequestHandler: VNSequenceRequestHandler? = nil
     private var lastObservations: VNRectangleObservation? = nil
+    private var lastReturnedObservation: VNRectangleObservation? = nil
+    private var failedSubsequentObservations = 0
     
     func detectRectangles(image: CIImage, orientation: CGImagePropertyOrientation = .up) -> [UUID: VNRectangleObservation] {
         let filteredImage = filterImage(image: image)
@@ -44,16 +46,28 @@ class RectangleDetector {
             try sequenceRequestHandler!.perform([request], on: filteredImage, orientation: orientation)
         } catch {
             print("sequenceRequestHandler error \(error)")
+            failedSubsequentObservations += 1
+            if failedSubsequentObservations > 5 {
+                failedSubsequentObservations = 0
+                lastReturnedObservation = nil
+            }
             lastObservations = nil
             sequenceRequestHandler = nil
         }
         guard let rectObservations = request.results as? [VNRectangleObservation] else {
-            return [:]
+//            failedSubsequentObservations += 1
+            if let lastReturnedObservation = lastReturnedObservation {
+                return [lastReturnedObservation.uuid: lastReturnedObservation]
+            } else {
+                return [:]
+            }
         }
+        failedSubsequentObservations = 0
         var detectedRects = [UUID : VNRectangleObservation]()
         for rect in rectObservations {
             detectedRects[rect.uuid] = rect
             lastObservations = rect
+            lastReturnedObservation = rect
         }
 //        print(detectedRects)
         return detectedRects

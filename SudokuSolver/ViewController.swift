@@ -40,14 +40,14 @@ class ViewController: UIViewController {
         capturedView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5).isActive = true
         capturedView.heightAnchor.constraint(equalTo: capturedView.widthAnchor).isActive = true
 
-        showCancellable = mainViewModel.$detectedPuzzles.receive(on: DispatchQueue.main)
+        showCancellable = mainViewModel.getCurrentPuzzles().receive(on: DispatchQueue.main)
             .sink(receiveValue: show)
         
         setPreviewImageCancellable = mainViewModel.$capturedPreviewImage.receive(on: DispatchQueue.main)
             .sink(receiveValue: setPreviewImage)
     }
     
-    private func show(puzzles: [UUID : DetectedPuzzle]) {
+    private func show(puzzles: [UUID : MainViewModel.DetectedPuzzle]) {
         previewView.show(puzzles: puzzles)
     }
     
