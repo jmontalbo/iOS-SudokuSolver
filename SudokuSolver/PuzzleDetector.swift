@@ -37,11 +37,11 @@ class PuzzleDetector {
             }
             puzzleVotes[puzzle] = currentPuzzleVotes + 1
             if currentPuzzleVotes + 1 > 2 {
-                if puzzle != lastPuzzleReturned {
-// need to test
-                    lastPuzzleReturned = puzzle
-                    return puzzle
-                }
+//                if puzzle != lastPuzzleReturned {
+//                    lastPuzzleReturned = puzzle
+//                    return puzzle
+//                }
+                return puzzle
             }
         }
         return nil

@@ -20,7 +20,7 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
     private let capturedFramesSubject = PassthroughSubject<CMSampleBuffer, Never>()
     private let videoDataOutputQueue = DispatchQueue(label: "com.JDM.videoDataOutputQueue")
     private let stateMachine = StateMachine()
-        
+    
     override init() {
         
         super.init()
@@ -71,6 +71,8 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                 return [:]
             case .trackingPotentialPuzzles(let potentialPuzzles):
                 return potentialPuzzles
+            case .trackingUnSolvedPuzzles(let unSolvedPuzzles):
+                return unSolvedPuzzles
             case .trackingSolvedPuzzles(let solvedPuzzles):
                 return solvedPuzzles
             }
@@ -82,58 +84,9 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         guard let imageBuffer = capturedFrame.imageBuffer else {
             return
         }
-
+        
         let image = CIImage(cvPixelBuffer: imageBuffer)
         stateMachine.handleEvent(event: .imageIn(image))
-//        let detectedRectangles = rectangleDetector.detectRectangles(image: image)
-//        guard let detectedRectangle = detectedRectangles.first else {
-//            detectedPuzzles.removeAll()
-//            return
-//        }
-//
-//        if let existingDetectedPuzzle = detectedPuzzles[detectedRectangle.key] {
-//            let updatedDetectedPuzzle = DetectedPuzzle(
-//                rect: detectedRectangle.value,
-//                solvedPuzzle: existingDetectedPuzzle.solvedPuzzle,
-//                unSolvedPuzzle: existingDetectedPuzzle.unSolvedPuzzle
-//            )
-//            detectedPuzzles[detectedRectangle.key] = updatedDetectedPuzzle
-//            if existingDetectedPuzzle.solvedPuzzle != nil {
-//                return
-//            }
-//        } else {
-//            detectedPuzzles.removeAll()
-//            detectedPuzzles[detectedRectangle.key] = DetectedPuzzle(
-//                rect: detectedRectangle.value,
-//                solvedPuzzle: nil,
-//                unSolvedPuzzle: nil
-//            )
-//        }
-//
-//        let cropRect = VNImageRectForNormalizedRect(detectedRectangle.value.boundingBox, Int(image.extent.width), Int(image.extent.height))
-//        let croppedImage = image.cropped(to: cropRect)
-//        let transform = CGAffineTransform.identity
-//            .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-//
-//        digitDetector.detect(croppedImage.transformed(by: transform)) {
-//            detectedDigits in
-//            guard let detectedPuzzle = self.puzzleDetector.detect(digits: detectedDigits) else {
-//                return
-//            }
-//            let puzzle = Puzzle(puzzle: detectedPuzzle)
-//            let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: puzzle)
-//            if solvedPuzzle.isSolved() {
-//                print("puzzle is solved \(solvedPuzzle.puzzle)")
-//                self.imageProcessingQueue.async {
-//                    self.detectedPuzzles[detectedRectangle.key] =
-//                        DetectedPuzzle(rect: detectedRectangle.value, solvedPuzzle: solvedPuzzle.puzzle, unSolvedPuzzle: detectedPuzzle)
-//                }
-//            }
-//            else {
-//                print("puzzle not solved")
-//            }
-//        }
-//        capturedPreviewImage = digitDetector.croppedPreviewImage
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
@@ -162,6 +115,7 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         enum State {
             case detectingPuzzles
             case trackingPotentialPuzzles([UUID: DetectedPuzzle])
+            case trackingUnSolvedPuzzles([UUID: DetectedPuzzle])
             case trackingSolvedPuzzles([UUID: DetectedPuzzle])
         }
         enum Event {
@@ -172,93 +126,96 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         
         let stateMachineQueue = DispatchQueue(label: "com.JDM.stateMachineQueue")
         private let rectangleDetector = RectangleDetector()
-        private let digitDetector = DigitDetector()
-        private let puzzleDetector = PuzzleDetector()
+        private var digitDetector = DigitDetector()
+        private var puzzleDetector = PuzzleDetector()
         @Published private(set) var currentState: State = .detectingPuzzles
         
         func handleEvent(event: Event) {
-            switch currentState {
-            case .detectingPuzzles:
-                switch event {
-                case .imageIn(let image):
-                    let detectedRectangles = rectangleDetector.detectRectangles(image: image)
-                    if !detectedRectangles.isEmpty {
-                        handleEvent(event: .rectangleFound(image, detectedRectangles))
-                    } else {
-                        handleEvent(event: .rectangleNotFound)
-                    }
-                case .rectangleFound(_, let detectedRectangles):
-                    var detectedPuzzles = [UUID:DetectedPuzzle]()
-                    detectedPuzzles[detectedRectangles.first!.key] = DetectedPuzzle(rect: detectedRectangles.first!.value, solvedPuzzle: nil, unSolvedPuzzle: nil)
-                    currentState = .trackingPotentialPuzzles(detectedPuzzles)
-                case .rectangleNotFound:
-                    return
+//            print("state \(currentState )")
+            switch event {
+            case .imageIn(let image):
+                let detectedRectangles = rectangleDetector.detectRectangles(image: image)
+                if !detectedRectangles.isEmpty {
+                    handleEvent(event: .rectangleFound(image, detectedRectangles))
+                } else {
+//                    digitDetector = DigitDetector()
+//                    puzzleDetector = PuzzleDetector()
+                    handleEvent(event: .rectangleNotFound)
                 }
-            case .trackingPotentialPuzzles(var detectedPuzzles):
-                switch event {
-                case .imageIn(let image):
-                    let detectedRectangles = rectangleDetector.detectRectangles(image: image)
-                    if !detectedRectangles.isEmpty {
-                        handleEvent(event: .rectangleFound(image, detectedRectangles))
-                    } else {
-                        handleEvent(event: .rectangleNotFound)
-                    }
-                case .rectangleNotFound:
-                    currentState = .detectingPuzzles
-                case .rectangleFound(let image, let detectedRectangles):
-                    var (uuid, detectedPuzzle) = detectedPuzzles.first!
-                    detectedPuzzle.rect = detectedRectangles.first!.value
-                    detectedPuzzles[uuid] = detectedPuzzle
+            case .rectangleFound(let image, let detectedRectangles):
+                let detectedRectangle = detectedRectangles.first!.value
+                switch currentState {
+                case .detectingPuzzles:
+                    var detectedPuzzles = [UUID:DetectedPuzzle]()
+                    detectedPuzzles[detectedRectangles.first!.key] = DetectedPuzzle(rect: detectedRectangle, solvedPuzzle: nil, unSolvedPuzzle: nil)
                     currentState = .trackingPotentialPuzzles(detectedPuzzles)
-                    if detectedPuzzle.unSolvedPuzzle == nil {
-                        let cropRect = VNImageRectForNormalizedRect(detectedPuzzle.rect.boundingBox, Int(image.extent.width), Int(image.extent.height))
-                        let croppedImage = image.cropped(to: cropRect)
-                        let transform = CGAffineTransform.identity
-                            .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-                        
-                        digitDetector.detect(croppedImage.transformed(by: transform)) {
-                            detectedDigits in
-                            guard let puzzleDetectorResult = self.puzzleDetector.detect(digits: detectedDigits) else {
+//                    handleEvent(event: .rectangleFound(image, detectedRectangles))
+                case .trackingPotentialPuzzles(var detectedPuzzles):
+                    let detectedPuzzle = detectedPuzzles.first!.value
+                    detectedPuzzles[detectedPuzzles.first!.key] = DetectedPuzzle(rect: detectedRectangle,
+                                                                                 solvedPuzzle: detectedPuzzle.solvedPuzzle,
+                                                                                 unSolvedPuzzle: detectedPuzzle.unSolvedPuzzle)
+                    currentState = .trackingPotentialPuzzles(detectedPuzzles)
+                    
+                    let cropRect = VNImageRectForNormalizedRect(detectedPuzzle.rect.boundingBox, Int(image.extent.width), Int(image.extent.height))
+                    let croppedImage = image.cropped(to: cropRect)
+                    let transform = CGAffineTransform.identity
+                        .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
+                    
+                    digitDetector.detect(croppedImage.transformed(by: transform)) {
+                        detectedDigits in
+                        guard let puzzleDetectorResult = self.puzzleDetector.detect(digits: detectedDigits) else {
+                            return
+                        }
+                        self.stateMachineQueue.sync {
+                            detectedPuzzles[detectedPuzzles.first!.key] = DetectedPuzzle(rect: detectedRectangle,
+                                                                                         solvedPuzzle: detectedPuzzle.solvedPuzzle,
+                                                                                         unSolvedPuzzle: puzzleDetectorResult)
+                            switch self.currentState {
+                            case .trackingUnSolvedPuzzles, .trackingSolvedPuzzles:
                                 return
-                            }
-                            let puzzle = Puzzle(puzzle: puzzleDetectorResult)
-                            detectedPuzzle.unSolvedPuzzle = puzzle.puzzle
-                            detectedPuzzles[uuid] = detectedPuzzle
-                            self.stateMachineQueue.sync {
-                                self.currentState = .trackingPotentialPuzzles(detectedPuzzles)
-                            }
-                            let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: puzzle)
-                            if solvedPuzzle.isSolved() {
-                                print("puzzle is solved \(solvedPuzzle.puzzle)")
-                                self.stateMachineQueue.sync {
-                                    var solvedPuzzles = [UUID:DetectedPuzzle]()
-                                    solvedPuzzles[uuid] =
-                                        DetectedPuzzle(rect: detectedPuzzle.rect, solvedPuzzle: solvedPuzzle.puzzle, unSolvedPuzzle: puzzleDetectorResult)
-                                    self.currentState = .trackingSolvedPuzzles(solvedPuzzles)
-                                }
-                            } else {
-                                print("puzzle not solved")
+                            case .trackingPotentialPuzzles:
+                                self.currentState = .trackingUnSolvedPuzzles(detectedPuzzles)
+                            default:
+                                print("Unexpected State \(self.currentState)")
+                                break
                             }
                         }
                     }
-                }
-            case .trackingSolvedPuzzles(var solvedPuzzles):
-                switch event {
-                case .imageIn(let image):
-                    let detectedRectangles = rectangleDetector.detectRectangles(image: image)
-                    if !detectedRectangles.isEmpty {
-                        handleEvent(event: .rectangleFound(image, detectedRectangles))
+                case .trackingUnSolvedPuzzles(var detectedPuzzles):
+                    let detectedPuzzle = detectedPuzzles.first!.value
+                    detectedPuzzles[detectedPuzzles.first!.key] = DetectedPuzzle(rect: detectedRectangle,
+                                                                                 solvedPuzzle: detectedPuzzle.solvedPuzzle,
+                                                                                 unSolvedPuzzle: detectedPuzzle.unSolvedPuzzle)
+                    currentState = .trackingSolvedPuzzles(detectedPuzzles)
+                    let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: Puzzle(puzzle: detectedPuzzle.unSolvedPuzzle!))
+                    if solvedPuzzle.isSolved() {
+                        print("puzzle is solved \(solvedPuzzle.puzzle)")
+                        detectedPuzzles[detectedPuzzles.first!.key] = DetectedPuzzle(rect: detectedRectangle,
+                                                                                     solvedPuzzle: solvedPuzzle.puzzle,
+                                                                                     unSolvedPuzzle: detectedPuzzle.unSolvedPuzzle)
+                        currentState = .trackingSolvedPuzzles(detectedPuzzles)
                     } else {
-                        handleEvent(event: .rectangleNotFound)
+                        currentState = .trackingPotentialPuzzles(detectedPuzzles)
+                        print("puzzle not solved")
                     }
-                case .rectangleNotFound:
-                    currentState = .detectingPuzzles
-                case .rectangleFound(_, let detectedRectangles):
-                    var (uuid, detectedPuzzle) = solvedPuzzles.first!
-                    detectedPuzzle.rect = detectedRectangles.first!.value
-                    solvedPuzzles[uuid] = detectedPuzzle
-                    currentState = .trackingSolvedPuzzles(solvedPuzzles)
+//                    handleEvent(event: .rectangleFound(image, detectedRectangles))
+                case .trackingSolvedPuzzles(var detectedPuzzles):
+                    let detectedPuzzle = detectedPuzzles.first!.value
+                    detectedPuzzles[detectedPuzzles.first!.key] = DetectedPuzzle(rect: detectedRectangle,
+                                                                                 solvedPuzzle: detectedPuzzle.solvedPuzzle,
+                                                                                 unSolvedPuzzle: detectedPuzzle.unSolvedPuzzle)
+                    currentState = .trackingSolvedPuzzles(detectedPuzzles)
                 }
+            case .rectangleNotFound:
+                switch currentState {
+                case .detectingPuzzles:
+                    break
+                default:
+                    puzzleDetector = PuzzleDetector()
+                    digitDetector = DigitDetector()
+                }
+                currentState = .detectingPuzzles
             }
         }
     }
