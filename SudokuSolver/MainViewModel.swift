@@ -113,7 +113,6 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         
         let stateMachineQueue = DispatchQueue(label: "com.JDM.stateMachineQueue")
         private var currentImage = CIImage()
-        private var currentDetectedRectangles = [UUID : VNRectangleObservation]()
         @Published private(set) var currentDetectedPuzzles = [UUID: DetectedPuzzle]()
         private let rectangleDetector = RectangleDetector()
         private var digitDetector = DigitDetector()
@@ -124,96 +123,103 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             switch event {
             case .imageIn(let image):
                 currentImage = image
-                currentDetectedRectangles = rectangleDetector.detectRectangles(image: image)
+                let currentDetectedRectangles = rectangleDetector.detectRectangles(image: image)
+                guard let currentDetectedRectangle = currentDetectedRectangles.first else {
+                    currentDetectedPuzzles = [UUID: DetectedPuzzle]()
+                    updateState()
+                    return
+                }
+                if currentDetectedPuzzles.isEmpty {
+                    currentDetectedPuzzles = [currentDetectedRectangle.key:
+                                                DetectedPuzzle(rect: currentDetectedRectangle.value,
+                                                               solvedPuzzle: nil,
+                                                               unSolvedPuzzle: nil)]
+                }
+                guard var currentDetectedPuzzle = currentDetectedPuzzles.first else {
+                    assertionFailure("No detected puzzle after empty check")
+                    return
+                }
+                currentDetectedPuzzle.value.rect = currentDetectedRectangle.value
+                currentDetectedPuzzles = [currentDetectedPuzzle.key: currentDetectedPuzzle.value]
+                switch currentState {
+                case .trackingPotentialPuzzles:
+                    let cropRect = VNImageRectForNormalizedRect(currentDetectedPuzzle.value.rect.boundingBox,
+                                                                Int(currentImage.extent.width),
+                                                                Int(currentImage.extent.height))
+                    let croppedImage = currentImage.cropped(to: cropRect)
+                    let transform = CGAffineTransform.identity
+                        .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
+                    
+                    digitDetector.detect(croppedImage.transformed(by: transform)) {
+                        detectedDigits in
+                        guard let puzzleDetectorResult = self.puzzleDetector.detect(digits: detectedDigits) else {
+                            return
+                        }
+                        self.stateMachineQueue.sync {
+                            guard var detectedPuzzleToUpdate = self.currentDetectedPuzzles.first else {
+                                return
+                            }
+                            detectedPuzzleToUpdate.value.unSolvedPuzzle = puzzleDetectorResult
+                            self.currentDetectedPuzzles = [detectedPuzzleToUpdate.key: detectedPuzzleToUpdate.value]
+                            self.updateState()
+                        }
+                    }
+                case .trackingUnSolvedPuzzles:
+                    digitDetector = DigitDetector()
+                    puzzleDetector = PuzzleDetector()
+                    guard let unsolvedPuzzle = currentDetectedPuzzle.value.unSolvedPuzzle else {
+                        print("unexpected State expected non-nil unsolved puzzle while trying to solve puzzle")
+                        return
+                    }
+//                    guard currentDetectedPuzzle.value.solvedPuzzle == nil else {
+//                        print("unexpected State expected non-nil unsolved puzzle while trying to solve puzzle")
+//                        return
+//                    }
+                    let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: Puzzle(puzzle: unsolvedPuzzle))
+                    if solvedPuzzle.isSolved() {
+                        currentDetectedPuzzle.value.solvedPuzzle = solvedPuzzle.puzzle
+                        currentDetectedPuzzles = [currentDetectedPuzzle.key: currentDetectedPuzzle.value]
+                        print("puzzle is solved \(solvedPuzzle.puzzle)")
+
+                    } else {
+                        currentDetectedPuzzle.value.solvedPuzzle = nil
+                        currentDetectedPuzzle.value.unSolvedPuzzle = nil
+                        currentDetectedPuzzles = [currentDetectedPuzzle.key: currentDetectedPuzzle.value]
+                        print("puzzle not solved")
+                    }
+                default:
+                    break
+                }
+
             }
             updateState()
         }
         
         private func updateState() {
-            guard let currentDetectedRectangle = currentDetectedRectangles.first else {
-                currentDetectedPuzzles = [UUID: DetectedPuzzle]()
+            guard let currentDetectedPuzzle = currentDetectedPuzzles.first else {
                 currentState = .detectingPuzzles
                 return
             }
+            let previousState = currentState
             switch currentState {
             case .detectingPuzzles:
-                currentDetectedPuzzles = [currentDetectedRectangle.key: DetectedPuzzle(rect: currentDetectedRectangle.value, solvedPuzzle: nil, unSolvedPuzzle: nil)]
                 currentState = .trackingPotentialPuzzles
             case .trackingPotentialPuzzles:
-                guard let detectedPuzzle = currentDetectedPuzzles.first else {
-                    print("unexpected State1")
-//                    currentState = .detectingPuzzles
-                    return
-                }
-                currentDetectedPuzzles = [detectedPuzzle.key: DetectedPuzzle(rect: currentDetectedRectangle.value,
-                                                                             solvedPuzzle: detectedPuzzle.value.solvedPuzzle,
-                                                                             unSolvedPuzzle: detectedPuzzle.value.unSolvedPuzzle)]
-                guard detectedPuzzle.value.unSolvedPuzzle == nil else {
-                    print("unexpected State2")
-                    return
-                }
-                let cropRect = VNImageRectForNormalizedRect(detectedPuzzle.value.rect.boundingBox,
-                                                            Int(currentImage.extent.width),
-                                                            Int(currentImage.extent.height))
-                let croppedImage = currentImage.cropped(to: cropRect)
-                let transform = CGAffineTransform.identity
-                    .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-                
-                digitDetector.detect(croppedImage.transformed(by: transform)) {
-                    detectedDigits in
-                    guard let puzzleDetectorResult = self.puzzleDetector.detect(digits: detectedDigits) else {
-                        return
-                    }
-                    self.stateMachineQueue.sync {
-                        self.currentDetectedPuzzles[detectedPuzzle.key] = DetectedPuzzle(rect: currentDetectedRectangle.value,
-                                                                                         solvedPuzzle: detectedPuzzle.value.solvedPuzzle,
-                                                                                     unSolvedPuzzle: puzzleDetectorResult)
-                        self.currentState = .trackingUnSolvedPuzzles
-                    }
+                if currentDetectedPuzzle.value.unSolvedPuzzle != nil {
+                    currentState = .trackingUnSolvedPuzzles
                 }
             case .trackingUnSolvedPuzzles:
-                digitDetector = DigitDetector()
-                puzzleDetector = PuzzleDetector()
-                guard let detectedPuzzle = currentDetectedPuzzles.first else {
-                    print("unexpected State3")
-                    return
-                }
-                currentDetectedPuzzles = [detectedPuzzle.key: DetectedPuzzle(rect: currentDetectedRectangle.value,
-                                                                             solvedPuzzle: detectedPuzzle.value.solvedPuzzle,
-                                                                             unSolvedPuzzle: detectedPuzzle.value.unSolvedPuzzle)]
-                guard let unsolvedPuzzle = detectedPuzzle.value.unSolvedPuzzle else {
-                    print("unexpected State4.1")
-                    return
-                }
-                guard detectedPuzzle.value.solvedPuzzle == nil else {
-                    print("unexpected State4.2")
-                    return
-                }
-                let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: Puzzle(puzzle: unsolvedPuzzle))
-                if solvedPuzzle.isSolved() {
-                    print("puzzle is solved \(solvedPuzzle.puzzle)")
-                    currentDetectedPuzzles = [detectedPuzzle.key: DetectedPuzzle(rect: currentDetectedRectangle.value,
-                                                                                 solvedPuzzle: solvedPuzzle.puzzle,
-                                                                                 unSolvedPuzzle: detectedPuzzle.value.unSolvedPuzzle)]
+                if currentDetectedPuzzle.value.solvedPuzzle != nil {
                     currentState = .trackingSolvedPuzzles
                 } else {
-                    currentDetectedPuzzles = [detectedPuzzle.key: DetectedPuzzle(rect: currentDetectedRectangle.value,
-                                                                                 solvedPuzzle: nil,
-                                                                                 unSolvedPuzzle: nil)]
                     currentState = .trackingPotentialPuzzles
-                    print("puzzle not solved")
                 }
-            case .trackingSolvedPuzzles:
-                guard let detectedPuzzle = currentDetectedPuzzles.first else {
-                    print("unexpected State5")
-                    return
-                }
-                currentDetectedPuzzles = [detectedPuzzle.key: DetectedPuzzle(rect: currentDetectedRectangle.value,
-                                                                             solvedPuzzle: detectedPuzzle.value.solvedPuzzle,
-                                                                             unSolvedPuzzle: detectedPuzzle.value.unSolvedPuzzle)]
+            default :
+                break
+            }
+            if currentState != previousState {
+                print("State transition:\(previousState) to \(currentState)")
             }
         }
     }
 }
-
-
