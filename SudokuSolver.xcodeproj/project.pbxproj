@@ -17,7 +17,9 @@
 		F3683C2A25EC6AC500B84929 /* VideoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3683C2925EC6AC500B84929 /* VideoPreviewView.swift */; };
 		F372A887262CD77C00EAF58E /* PuzzleDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F372A886262CD77C00EAF58E /* PuzzleDetector.swift */; };
 		F372A8E5264C7B1E00EAF58E /* RectangleDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F372A8E4264C7B1D00EAF58E /* RectangleDetector.swift */; };
+		F37C85A8267BF4D1000F2933 /* MainViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37C85A7267BF4D1000F2933 /* MainViewModelTests.swift */; };
 		F399FA15260411B1009EC34D /* MNIST.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = F399FA14260411B1009EC34D /* MNIST.mlmodel */; };
+		F3A62AFD2676C40D00B524ED /* IMG_1434.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F3A62AFC2676C40D00B524ED /* IMG_1434.MOV */; };
 		F3B94CDE260D386600AC1622 /* puzzle1.png in Resources */ = {isa = PBXBuildFile; fileRef = F3B94CDD260D386600AC1622 /* puzzle1.png */; };
 		F3B94CE4260D4AD200AC1622 /* Puzzle4.png in Resources */ = {isa = PBXBuildFile; fileRef = F3B94CE3260D4AD200AC1622 /* Puzzle4.png */; };
 		F3C15B0D25F19B1700A999CB /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C15B0C25F19B1700A999CB /* MainViewModel.swift */; };
@@ -73,7 +75,9 @@
 		F3683C2925EC6AC500B84929 /* VideoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewView.swift; sourceTree = "<group>"; };
 		F372A886262CD77C00EAF58E /* PuzzleDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleDetector.swift; sourceTree = "<group>"; };
 		F372A8E4264C7B1D00EAF58E /* RectangleDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangleDetector.swift; sourceTree = "<group>"; };
+		F37C85A7267BF4D1000F2933 /* MainViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModelTests.swift; sourceTree = "<group>"; };
 		F399FA14260411B1009EC34D /* MNIST.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = MNIST.mlmodel; sourceTree = "<group>"; };
+		F3A62AFC2676C40D00B524ED /* IMG_1434.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_1434.MOV; sourceTree = "<group>"; };
 		F3B94CDD260D386600AC1622 /* puzzle1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = puzzle1.png; sourceTree = SOURCE_ROOT; };
 		F3B94CE3260D4AD200AC1622 /* Puzzle4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Puzzle4.png; sourceTree = SOURCE_ROOT; };
 		F3C15B0C25F19B1700A999CB /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
@@ -183,6 +187,7 @@
 		F3683C0C25E849D200B84929 /* SudokuSolverTests */ = {
 			isa = PBXGroup;
 			children = (
+				F3A62AFC2676C40D00B524ED /* IMG_1434.MOV */,
 				F3F732B52623C8930021EEAB /* puzzleImage.png */,
 				F3E5ED9B2607F4F1001D986E /* DigitDetectorTests.swift */,
 				F3F732BD2628FBB60021EEAB /* PuzzleSolverTests.swift */,
@@ -206,6 +211,7 @@
 				F3C9A7112651CA4A00244EA7 /* IMG_2745.MOV */,
 				F3E5EDC726082954001D986E /* multiDigits587.png */,
 				F3683C0F25E849D200B84929 /* Info.plist */,
+				F37C85A7267BF4D1000F2933 /* MainViewModelTests.swift */,
 			);
 			path = SudokuSolverTests;
 			sourceTree = "<group>";
@@ -304,6 +310,7 @@
 			files = (
 				F3F9B30C261674F7009EDE47 /* singleDigit0CleanHiContr.png in Resources */,
 				F3C9A7142651CA4A00244EA7 /* IMG_2744.MOV in Resources */,
+				F3A62AFD2676C40D00B524ED /* IMG_1434.MOV in Resources */,
 				F3F9B2EA26127A5B009EDE47 /* MiddleBox3.png in Resources */,
 				F3F9B3122616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png in Resources */,
 				F3C9A7152651CA4A00244EA7 /* IMG_2745.MOV in Resources */,
@@ -394,6 +401,7 @@
 				F3F732BE2628FBB60021EEAB /* PuzzleSolverTests.swift in Sources */,
 				F3C9A71E2651CCDB00244EA7 /* VideoReader.swift in Sources */,
 				F3C9A71A2651CA8600244EA7 /* RectangleDetectorTests.swift in Sources */,
+				F37C85A8267BF4D1000F2933 /* MainViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

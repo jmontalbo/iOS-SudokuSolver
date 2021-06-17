@@ -45,7 +45,7 @@ class RectangleDetector {
         do {
             try sequenceRequestHandler!.perform([request], on: filteredImage, orientation: orientation)
         } catch {
-
+            print("single sequenceRequestHandler error \(error)")
             failedSubsequentObservations += 1
             if failedSubsequentObservations > 5 {
                 print("sequenceRequestHandler error \(error)")

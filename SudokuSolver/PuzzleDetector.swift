@@ -25,8 +25,9 @@ class PuzzleDetector {
             }
             puzzle[entry.row][entry.column] = entry.digit
         }
+//        return puzzle
         detectedPuzzles.append(puzzle)
-        if detectedPuzzles.count > 5 {
+        if detectedPuzzles.count > 3 {
             detectedPuzzles.remove(at: 0)
         }
         var puzzleVotes = [[[Int]]:Int]()
@@ -36,11 +37,8 @@ class PuzzleDetector {
                 continue
             }
             puzzleVotes[puzzle] = currentPuzzleVotes + 1
-            if currentPuzzleVotes + 1 > 2 {
-//                if puzzle != lastPuzzleReturned {
-//                    lastPuzzleReturned = puzzle
-//                    return puzzle
-//                }
+            if currentPuzzleVotes + 1 > 1 {
+//                print("puzzleVotes \(puzzleVotes)")
                 return puzzle
             }
         }

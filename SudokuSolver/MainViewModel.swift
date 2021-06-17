@@ -124,8 +124,10 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             case .imageIn(let image):
                 currentImage = image
                 let currentDetectedRectangles = rectangleDetector.detectRectangles(image: image)
+//                print("rectangleDetectionRequest \(currentDetectedRectangles)")
                 guard let currentDetectedRectangle = currentDetectedRectangles.first else {
                     currentDetectedPuzzles = [UUID: DetectedPuzzle]()
+
                     updateState()
                     return
                 }
@@ -143,6 +145,9 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                 currentDetectedPuzzles = [currentDetectedPuzzle.key: currentDetectedPuzzle.value]
                 switch currentState {
                 case .trackingPotentialPuzzles:
+                    currentDetectedPuzzle.value.solvedPuzzle = nil
+                    currentDetectedPuzzle.value.unSolvedPuzzle = nil
+                    currentDetectedPuzzles = [currentDetectedPuzzle.key: currentDetectedPuzzle.value]
                     let cropRect = VNImageRectForNormalizedRect(currentDetectedPuzzle.value.rect.boundingBox,
                                                                 Int(currentImage.extent.width),
                                                                 Int(currentImage.extent.height))
@@ -152,9 +157,14 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                     
                     digitDetector.detect(croppedImage.transformed(by: transform)) {
                         detectedDigits in
+                        guard self.currentState == .trackingPotentialPuzzles else {
+                            print("not setting currentUnsolvedPuzzle during \(self.currentState)")
+                            return
+                        }
                         guard let puzzleDetectorResult = self.puzzleDetector.detect(digits: detectedDigits) else {
                             return
                         }
+                        
                         self.stateMachineQueue.sync {
                             guard var detectedPuzzleToUpdate = self.currentDetectedPuzzles.first else {
                                 return
@@ -165,8 +175,6 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                         }
                     }
                 case .trackingUnSolvedPuzzles:
-                    digitDetector = DigitDetector()
-                    puzzleDetector = PuzzleDetector()
                     guard let unsolvedPuzzle = currentDetectedPuzzle.value.unSolvedPuzzle else {
                         print("unexpected State expected non-nil unsolved puzzle while trying to solve puzzle")
                         return
@@ -196,16 +204,23 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         }
         
         private func updateState() {
+            let previousState = currentState
             guard let currentDetectedPuzzle = currentDetectedPuzzles.first else {
                 currentState = .detectingPuzzles
+                if currentState != previousState {
+                    digitDetector = DigitDetector()
+                    puzzleDetector = PuzzleDetector()
+                    print("State transition:\(previousState) to \(currentState)")
+                }
                 return
             }
-            let previousState = currentState
             switch currentState {
             case .detectingPuzzles:
                 currentState = .trackingPotentialPuzzles
             case .trackingPotentialPuzzles:
                 if currentDetectedPuzzle.value.unSolvedPuzzle != nil {
+                    digitDetector = DigitDetector()
+                    puzzleDetector = PuzzleDetector()
                     currentState = .trackingUnSolvedPuzzles
                 }
             case .trackingUnSolvedPuzzles:
