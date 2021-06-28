@@ -18,13 +18,15 @@ class DigitDetector {
     private let textRecognizer = TextRecognizer.textRecognizer()
     private var rawDigitHistory = [[DigitDetectorResult]]()
     
-    public func detect(_ image: CIImage, completionHandler: @escaping ([DigitDetectorResult]) -> ()) {
+    public func detect(_ image: CIImage,
+                       orientation: CGImagePropertyOrientation,
+                       completionHandler: @escaping ([DigitDetectorResult]) -> ()) {
         let context = CIContext()
         let cgImage = context.createCGImage(image, from: image.extent)
         let fixedCroppedUIImage = UIImage(cgImage: cgImage!)
         croppedPreviewImage = fixedCroppedUIImage
         let fixedCroppedVisionImage = VisionImage(image: fixedCroppedUIImage)
-        fixedCroppedVisionImage.orientation = fixedCroppedUIImage.imageOrientation
+        fixedCroppedVisionImage.orientation = DigitDetector.getOrientation(from: orientation)  //fixedCroppedUIImage.imageOrientation
         textRecognizer.process(fixedCroppedVisionImage) { result, error in
             guard
                 error == nil,
@@ -89,12 +91,35 @@ class DigitDetector {
                     digitDetectorResults.append(digitDetectorResult)
                 }
             }
-//            print(digitDetectorResults.count)
+            print(digitDetectorResults.count)
 //            print(digitVotes)
             completionHandler(digitDetectorResults)
         }
     }
+    
+    private static func getOrientation(from: CGImagePropertyOrientation) -> UIImage.Orientation {
+        switch from {
+        case .up:
+            return .up
+        case .upMirrored:
+            return .upMirrored
+        case .down:
+            return .down
+        case .downMirrored:
+            return .downMirrored
+        case .leftMirrored:
+            return .leftMirrored
+        case .right:
+            return .right
+        case .rightMirrored:
+            return .rightMirrored
+        case .left:
+            return .left
+        }
+    }
 }
+
+
 
 struct DigitDetectorResult: Hashable {
     let row: Int

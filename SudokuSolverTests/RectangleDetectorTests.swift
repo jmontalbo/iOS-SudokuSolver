@@ -28,20 +28,11 @@ class RectangleDetectorTests: XCTestCase {
         
         let detectorUnderTest = RectangleDetector()
         var didDetectRectangle = false
-//        var didWriteFile = false
         var framesIn = 0.0
         var rectsDetected = 0.0
         while let nextFrame = videoReader.nextFrame(){
             framesIn += 1.0
             let image = CIImage(cvPixelBuffer: nextFrame)
-//            if !didWriteFile {
-//                didWriteFile = true
-//                let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//                let testImage = UIImage(ciImage: image)
-//                let testFileURL = paths.appendingPathComponent("copy.png")
-//                print("testFileURL \(testFileURL)")
-//                try testImage.pngData()!.write(to: testFileURL)
-//            }
             let detectedRectangles = detectorUnderTest.detectRectangles(image: image, orientation: videoReader.orientation)
             if !detectedRectangles.isEmpty {
                 rectsDetected += 1.0

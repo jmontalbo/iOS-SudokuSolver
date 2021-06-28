@@ -38,9 +38,9 @@ class DigitDetectorTests: XCTestCase {
         let fileString = Bundle(for: type(of: self)).path(forResource: "puzzle1", ofType: "png")!
         let imageWithPuzzle = CIImage(image: UIImage(contentsOfFile: fileString)!)!
         var detectedResults: [DigitDetectorResult]? = nil
-        detectorUnderTest.detect(imageWithPuzzle) {_ in
-            self.detectorUnderTest.detect(imageWithPuzzle) {_ in
-                self.detectorUnderTest.detect(imageWithPuzzle) { results in
+        detectorUnderTest.detect(imageWithPuzzle, orientation: .up) {_ in
+            self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up) {_ in
+                self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up) { results in
                     detectedResults = results
                     testExpectation.fulfill()
                 }
@@ -68,9 +68,9 @@ class DigitDetectorTests: XCTestCase {
         let fileString = Bundle(for: type(of: self)).path(forResource: "puzzleImage", ofType: "png")!
         let imageWithPuzzle = CIImage(image: UIImage(contentsOfFile: fileString)!)!
         var detectedResults: [DigitDetectorResult]? = nil
-        detectorUnderTest.detect(imageWithPuzzle) {_ in
-            self.detectorUnderTest.detect(imageWithPuzzle) {_ in
-                self.detectorUnderTest.detect(imageWithPuzzle) { results in
+        detectorUnderTest.detect(imageWithPuzzle, orientation: .up) {_ in
+            self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up) {_ in
+                self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up) { results in
                     detectedResults = results
                     testExpectation.fulfill()
                 }
@@ -106,7 +106,7 @@ class DigitDetectorTests: XCTestCase {
             framesIn += 1.0
             let image = CIImage(cvPixelBuffer: nextFrame)
             let testExpectation = expectation(description: "Received Detected Results")
-            detectorUnderTest.detect(image) { results in
+            detectorUnderTest.detect(image, orientation: videoReader.orientation) { results in
                 testExpectation.fulfill()
                 print("results \(results)")
                 if DigitDetectorTests.digitResultsAreEqual(digitResults: results, expectedResults: puzzle1ExpectedResults){

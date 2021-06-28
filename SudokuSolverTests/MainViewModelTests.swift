@@ -8,11 +8,13 @@
 import Foundation
 import AVFoundation
 import XCTest
+import Combine
 @testable import SudokuSolver
 
 class MainViewModelTests: XCTestCase {
     
     var stateMachineUnderTest: MainViewModel.StateMachine!
+    var currentDetectedPuzzles: AnyCancellable!
     override func setUpWithError() throws {
         stateMachineUnderTest = MainViewModel.StateMachine()
     }
@@ -32,7 +34,8 @@ class MainViewModelTests: XCTestCase {
         var resultsReported = 0
         var puzzlesDetected = 0.0
         let testExpectation = expectation(description: "Received Detected Results")
-        let _ = stateMachineUnderTest.$currentDetectedPuzzles.sink {
+        testExpectation.assertForOverFulfill = false
+        currentDetectedPuzzles = stateMachineUnderTest.$currentDetectedPuzzles.sink {
             currentPuzzles in
             print("puzzles \(currentPuzzles)")
             resultsReported += 1
@@ -43,8 +46,9 @@ class MainViewModelTests: XCTestCase {
                 return
             }
             if solvedPuzzle == expectedSolvedPuzzle {
-                testExpectation.fulfill()
                 puzzlesDetected += 1.0
+                if puzzlesDetected == 10.0 {              testExpectation.fulfill()
+                }
             }
         }
         let fileString = Bundle(for: type(of: self)).path(forResource: "IMG_2745", ofType: "MOV")!
@@ -56,9 +60,11 @@ class MainViewModelTests: XCTestCase {
         while let nextFrame = videoReader.nextFrame(){
             framesIn += 1.0
             let image = CIImage(cvPixelBuffer: nextFrame)
-            
-            stateMachineUnderTest.eventHandler(event: .imageIn(image))
+            stateMachineUnderTest.stateMachineQueue.sync {
+                self.stateMachineUnderTest.eventHandler(event: .imageIn(image, orientation: videoReader.orientation))
+            }
         }
+        
         waitForExpectations(timeout: 10.0) {_ in
             let fractionDetected = puzzlesDetected/framesIn
             print("frames in = \(framesIn)")

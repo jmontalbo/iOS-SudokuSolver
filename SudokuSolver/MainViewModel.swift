@@ -108,7 +108,7 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
             case trackingSolvedPuzzles
         }
         enum Event {
-            case imageIn(CIImage)
+            case imageIn(CIImage, orientation: CGImagePropertyOrientation = .up)
         }
         
         let stateMachineQueue = DispatchQueue(label: "com.JDM.stateMachineQueue")
@@ -119,12 +119,19 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
         private var puzzleDetector = PuzzleDetector()
         private var currentState: State = .detectingPuzzles
         
+
+//        func oriented(forExifOrientation orientation: Int32) -> CIImage
         func eventHandler(event: Event) {
             switch event {
-            case .imageIn(let image):
-                currentImage = image
-                let currentDetectedRectangles = rectangleDetector.detectRectangles(image: image)
-//                print("rectangleDetectionRequest \(currentDetectedRectangles)")
+            case .imageIn(let image, let orientation):
+                
+//                var transform = CGAffineTransform.identity
+//                if orientation == .right {
+//                    transform = transform.rotated(by: -CGFloat.pi / 2.0)
+//                }
+//                currentImage = image.transformed(by: transform)
+                currentImage = image.oriented(orientation)
+                let currentDetectedRectangles = rectangleDetector.detectRectangles(image: currentImage, orientation: .up)
                 guard let currentDetectedRectangle = currentDetectedRectangles.first else {
                     currentDetectedPuzzles = [UUID: DetectedPuzzle]()
 
@@ -152,10 +159,9 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                                                                 Int(currentImage.extent.width),
                                                                 Int(currentImage.extent.height))
                     let croppedImage = currentImage.cropped(to: cropRect)
-                    let transform = CGAffineTransform.identity
+                    let croppedTransform = CGAffineTransform.identity
                         .translatedBy(x: -cropRect.origin.x, y: -cropRect.origin.y)
-                    
-                    digitDetector.detect(croppedImage.transformed(by: transform)) {
+                    digitDetector.detect(croppedImage.transformed(by: croppedTransform), orientation: .up) {
                         detectedDigits in
                         guard self.currentState == .trackingPotentialPuzzles else {
                             print("not setting currentUnsolvedPuzzle during \(self.currentState)")
@@ -164,13 +170,28 @@ class MainViewModel: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleB
                         guard let puzzleDetectorResult = self.puzzleDetector.detect(digits: detectedDigits) else {
                             return
                         }
-                        
                         self.stateMachineQueue.sync {
                             guard var detectedPuzzleToUpdate = self.currentDetectedPuzzles.first else {
                                 return
                             }
                             detectedPuzzleToUpdate.value.unSolvedPuzzle = puzzleDetectorResult
                             self.currentDetectedPuzzles = [detectedPuzzleToUpdate.key: detectedPuzzleToUpdate.value]
+                            guard let unsolvedPuzzle = self.currentDetectedPuzzles.first!.value.unSolvedPuzzle else {
+                                print("unexpected State expected non-nil unsolved puzzle while trying to solve puzzle")
+                                return
+                            }
+                            let solvedPuzzle = PuzzleSolver.solvePuzzle(puzzle: Puzzle(puzzle: unsolvedPuzzle))
+                            if solvedPuzzle.isSolved() {
+                                currentDetectedPuzzle.value.solvedPuzzle = solvedPuzzle.puzzle
+                                self.currentDetectedPuzzles = [currentDetectedPuzzle.key: currentDetectedPuzzle.value]
+                                print("puzzle is solved \(solvedPuzzle.puzzle)")
+
+                            } else {
+                                currentDetectedPuzzle.value.solvedPuzzle = nil
+                                currentDetectedPuzzle.value.unSolvedPuzzle = nil
+                                self.currentDetectedPuzzles = [currentDetectedPuzzle.key: currentDetectedPuzzle.value]
+                                print("puzzle not solved")
+                            }
                             self.updateState()
                         }
                     }
