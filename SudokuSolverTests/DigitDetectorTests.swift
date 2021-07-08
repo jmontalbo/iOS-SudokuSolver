@@ -45,7 +45,7 @@ class DigitDetectorTests: XCTestCase {
             XCTAssertTrue(DigitDetectorTests.digitResultsAreEqual(digitResults: detectedResults, expectedResults: puzzle1ExpectedResults))
             expectation.fulfill()
         }
-        waitForExpectations(timeout: 5)
+        waitForExpectations(timeout: 10) // need to speed this up!
     }
     
     func testDetectorDetectsDigitsPuzzleImage() throws {
@@ -71,7 +71,7 @@ class DigitDetectorTests: XCTestCase {
             XCTAssertTrue(DigitDetectorTests.digitResultsAreEqual(digitResults: detectedResults, expectedResults: puzzle1ExpectedResults))
             expectation.fulfill()
         }
-        waitForExpectations(timeout: 7)
+        waitForExpectations(timeout: 10) // need to speed this up!
     }
     
     
