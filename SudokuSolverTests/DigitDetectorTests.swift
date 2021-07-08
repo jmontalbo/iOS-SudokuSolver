@@ -13,7 +13,7 @@ import XCTest
 class DigitDetectorTests: XCTestCase {
     
     var detectorUnderTest: DigitDetector!
-    
+    let testQueue = DispatchQueue.global(qos: .background)
     override func setUpWithError() throws {
         detectorUnderTest = DigitDetector()
     }
@@ -34,21 +34,14 @@ class DigitDetectorTests: XCTestCase {
             8: [(5, 8), (6, 4)],
             9: [(4, 5)],
         ]
-        let testExpectation = expectation(description: "Received Detected Results")
         let fileString = Bundle(for: type(of: self)).path(forResource: "puzzle1", ofType: "png")!
         let imageWithPuzzle = CIImage(image: UIImage(contentsOfFile: fileString)!)!
-        var detectedResults: [DigitDetectorResult]? = nil
-        detectorUnderTest.detect(imageWithPuzzle, orientation: .up) {_ in
-            self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up) {_ in
-                self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up) { results in
-                    detectedResults = results
-                    testExpectation.fulfill()
-                }
-            }
-        }
-        waitForExpectations(timeout: 5.0) {_ in
-            XCTAssertEqual(detectedResults!.count, 17)
-            XCTAssertTrue(DigitDetectorTests.digitResultsAreEqual(digitResults: detectedResults!, expectedResults: puzzle1ExpectedResults))
+        testQueue.sync {
+            let _ = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+            let _ = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+            let detectedResults = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+            XCTAssertEqual(detectedResults.count, 17)
+            XCTAssertTrue(DigitDetectorTests.digitResultsAreEqual(digitResults: detectedResults, expectedResults: puzzle1ExpectedResults))
         }
     }
     
@@ -64,22 +57,13 @@ class DigitDetectorTests: XCTestCase {
             8: [(2, 2), (3, 0), (4, 3), (6, 7), (8, 4)],
             9: [(1, 4), (2, 1), (7, 5), (8, 8)],
         ]
-        let testExpectation = expectation(description: "Received Detected Results")
         let fileString = Bundle(for: type(of: self)).path(forResource: "puzzleImage", ofType: "png")!
         let imageWithPuzzle = CIImage(image: UIImage(contentsOfFile: fileString)!)!
-        var detectedResults: [DigitDetectorResult]? = nil
-        detectorUnderTest.detect(imageWithPuzzle, orientation: .up) {_ in
-            self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up) {_ in
-                self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up) { results in
-                    detectedResults = results
-                    testExpectation.fulfill()
-                }
-            }
-        }
-        waitForExpectations(timeout: 5.0) {_ in
-            XCTAssertEqual(detectedResults!.count, 30)
-            XCTAssertTrue(DigitDetectorTests.digitResultsAreEqual(digitResults: detectedResults!, expectedResults: puzzle1ExpectedResults))
-        }
+        let _ = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+        let _ = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+        let detectedResults = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+        XCTAssertEqual(detectedResults.count, 30)
+        XCTAssertTrue(DigitDetectorTests.digitResultsAreEqual(digitResults: detectedResults, expectedResults: puzzle1ExpectedResults))
     }
     
     
@@ -95,6 +79,7 @@ class DigitDetectorTests: XCTestCase {
             8: [(2, 2), (3, 0), (4, 3), (6, 7), (8, 4)],
             9: [(1, 4), (2, 1), (7, 5), (8, 8)],
         ]
+        
         let fileString = Bundle(for: type(of: self)).path(forResource: "IMG_2745", ofType: "MOV")!
         let videoURL = URL(fileURLWithPath: fileString)
         let videoFile = AVAsset(url: videoURL)
@@ -106,20 +91,18 @@ class DigitDetectorTests: XCTestCase {
             framesIn += 1.0
             let image = CIImage(cvPixelBuffer: nextFrame)
             let testExpectation = expectation(description: "Received Detected Results")
-            detectorUnderTest.detect(image, orientation: videoReader.orientation) { results in
-                testExpectation.fulfill()
-                print("results \(results)")
-                if DigitDetectorTests.digitResultsAreEqual(digitResults: results, expectedResults: puzzle1ExpectedResults){
-                    digitsDetected += 1.0
-                }
+            let results = detectorUnderTest.detect(image, orientation: videoReader.orientation)
+            testExpectation.fulfill()
+            print("results \(results)")
+            if DigitDetectorTests.digitResultsAreEqual(digitResults: results, expectedResults: puzzle1ExpectedResults) {
+                digitsDetected += 1.0
             }
+            
         }
-        waitForExpectations(timeout: 10.0) {_ in
-            let fractionDetected = digitsDetected/framesIn
-            print("frames in = \(framesIn)")
-            print("fraction detected = \(fractionDetected)")
-            XCTAssertGreaterThan(fractionDetected, 0.5)
-        }
+        let fractionDetected = digitsDetected/framesIn
+        print("frames in = \(framesIn)")
+        print("fraction detected = \(fractionDetected)")
+        XCTAssertGreaterThan(fractionDetected, 0.5)
     }
     
     private static func digitResultsAreEqual(digitResults: [DigitDetectorResult], expectedResults: [Int: [(Int,Int)]]) -> Bool {

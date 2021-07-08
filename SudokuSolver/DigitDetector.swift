@@ -19,34 +19,32 @@ class DigitDetector {
     private var rawDigitHistory = [[DigitDetectorResult]]()
     
     public func detect(_ image: CIImage,
-                       orientation: CGImagePropertyOrientation,
-                       completionHandler: @escaping ([DigitDetectorResult]) -> ()) {
+                       orientation: CGImagePropertyOrientation) -> [DigitDetectorResult] {
         let context = CIContext()
         let cgImage = context.createCGImage(image, from: image.extent)
         let fixedCroppedUIImage = UIImage(cgImage: cgImage!)
         croppedPreviewImage = fixedCroppedUIImage
         let fixedCroppedVisionImage = VisionImage(image: fixedCroppedUIImage)
         fixedCroppedVisionImage.orientation = DigitDetector.getOrientation(from: orientation)  //fixedCroppedUIImage.imageOrientation
-        textRecognizer.process(fixedCroppedVisionImage) { result, error in
+        do {
+            let result = try textRecognizer.results(in: fixedCroppedVisionImage)
             guard
-                error == nil,
-                let result = result,
                 image.extent.height > 0.0,
                 image.extent.width > 0.0,
                 image.extent.height.isFinite,
                 image.extent.width.isFinite,
                 !image.extent.height.isNaN,
                 !image.extent.width.isNaN
-                else {
+            else {
                 // Error handling
-                return
+                return []
             }
             var rawDigitDetectorResults = [DigitDetectorResult]()
             for block in result.blocks {
                 for line in block.lines {
                     for element in line.elements {
                         let filteredText = element.text.components(separatedBy: CharacterSet.decimalDigits.inverted)
-                                    .joined()
+                            .joined()
                         if filteredText.count == 0 {
                             continue
                         }
@@ -92,8 +90,11 @@ class DigitDetector {
                 }
             }
             print(digitDetectorResults.count)
-//            print(digitVotes)
-            completionHandler(digitDetectorResults)
+            //            print(digitVotes)
+            return digitDetectorResults
+        } catch {
+            print("digit detector failure \(error)")
+            return []
         }
     }
     
