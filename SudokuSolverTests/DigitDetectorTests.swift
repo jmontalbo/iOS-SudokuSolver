@@ -36,13 +36,16 @@ class DigitDetectorTests: XCTestCase {
         ]
         let fileString = Bundle(for: type(of: self)).path(forResource: "puzzle1", ofType: "png")!
         let imageWithPuzzle = CIImage(image: UIImage(contentsOfFile: fileString)!)!
-        testQueue.sync {
-            let _ = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
-            let _ = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
-            let detectedResults = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+        let expectation = expectation(description: "digits recognized")
+        testQueue.async {
+            let _ = self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+            let _ = self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+            let detectedResults = self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
             XCTAssertEqual(detectedResults.count, 17)
             XCTAssertTrue(DigitDetectorTests.digitResultsAreEqual(digitResults: detectedResults, expectedResults: puzzle1ExpectedResults))
+            expectation.fulfill()
         }
+        waitForExpectations(timeout: 5)
     }
     
     func testDetectorDetectsDigitsPuzzleImage() throws {
@@ -59,11 +62,16 @@ class DigitDetectorTests: XCTestCase {
         ]
         let fileString = Bundle(for: type(of: self)).path(forResource: "puzzleImage", ofType: "png")!
         let imageWithPuzzle = CIImage(image: UIImage(contentsOfFile: fileString)!)!
-        let _ = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
-        let _ = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
-        let detectedResults = detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
-        XCTAssertEqual(detectedResults.count, 30)
-        XCTAssertTrue(DigitDetectorTests.digitResultsAreEqual(digitResults: detectedResults, expectedResults: puzzle1ExpectedResults))
+        let expectation = expectation(description: "digits recognized")
+        testQueue.async {
+            let _ = self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+            let _ = self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+            let detectedResults = self.detectorUnderTest.detect(imageWithPuzzle, orientation: .up)
+            XCTAssertEqual(detectedResults.count, 30)
+            XCTAssertTrue(DigitDetectorTests.digitResultsAreEqual(digitResults: detectedResults, expectedResults: puzzle1ExpectedResults))
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 7)
     }
     
     
