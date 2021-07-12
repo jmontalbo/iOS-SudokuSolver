@@ -74,48 +74,8 @@ class DigitDetectorTests: XCTestCase {
         waitForExpectations(timeout: 10) // need to speed this up!
     }
     
-    
-    func testDetectorCanDetectDigits() throws {
-        let puzzle1ExpectedResults = [
-            1: [(1, 3), (4, 8), (7, 4)],
-            2: [(5, 4), (6, 6)],
-            3: [(0, 1), (3, 8), (4, 5)],
-            4: [(4, 0), (7, 3)],
-            5: [(0, 0), (1, 5), (7, 8)],
-            6: [(1, 0), (2, 7), (3, 4), (5, 8), (6, 1)],
-            7: [(0, 4), (5, 0), (8, 7)],
-            8: [(2, 2), (3, 0), (4, 3), (6, 7), (8, 4)],
-            9: [(1, 4), (2, 1), (7, 5), (8, 8)],
-        ]
-        
-        let fileString = Bundle(for: type(of: self)).path(forResource: "IMG_2745", ofType: "MOV")!
-        let videoURL = URL(fileURLWithPath: fileString)
-        let videoFile = AVAsset(url: videoURL)
-        let videoReader = VideoReader(videoAsset: videoFile)!
-        let detectorUnderTest = DigitDetector()
-        var framesIn = 0.0
-        var digitsDetected = 0.0
-        while let nextFrame = videoReader.nextFrame(){
-            framesIn += 1.0
-            let image = CIImage(cvPixelBuffer: nextFrame)
-            let testExpectation = expectation(description: "Received Detected Results")
-            let results = detectorUnderTest.detect(image, orientation: videoReader.orientation)
-            testExpectation.fulfill()
-            print("results \(results)")
-            if DigitDetectorTests.digitResultsAreEqual(digitResults: results, expectedResults: puzzle1ExpectedResults) {
-                digitsDetected += 1.0
-            }
-            
-        }
-        let fractionDetected = digitsDetected/framesIn
-        print("frames in = \(framesIn)")
-        print("fraction detected = \(fractionDetected)")
-        XCTAssertGreaterThan(fractionDetected, 0.5)
-    }
-    
     private static func digitResultsAreEqual(digitResults: [DigitDetectorResult], expectedResults: [Int: [(Int,Int)]]) -> Bool {
         let expectedResultCount = expectedResults.values.flatMap { Array($0) }.count
-//        print("expectedValuesCount \(expectedResultCount)")
         guard expectedResultCount == digitResults.count else {
             return false
         }

@@ -18,13 +18,21 @@
 		F372A887262CD77C00EAF58E /* PuzzleDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F372A886262CD77C00EAF58E /* PuzzleDetector.swift */; };
 		F372A8E5264C7B1E00EAF58E /* RectangleDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F372A8E4264C7B1D00EAF58E /* RectangleDetector.swift */; };
 		F37C85A8267BF4D1000F2933 /* MainViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F37C85A7267BF4D1000F2933 /* MainViewModelTests.swift */; };
-		F399FA15260411B1009EC34D /* MNIST.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = F399FA14260411B1009EC34D /* MNIST.mlmodel */; };
+		F399DD16269BB7B600EF39A6 /* IMG_2821.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F399DD13269BB7B500EF39A6 /* IMG_2821.MOV */; };
+		F399DD17269BB7B600EF39A6 /* IMG_2822.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F399DD14269BB7B600EF39A6 /* IMG_2822.MOV */; };
+		F399DD18269BB7B600EF39A6 /* IMG_2823.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F399DD15269BB7B600EF39A6 /* IMG_2823.MOV */; };
+		F399DD1A269BB9D400EF39A6 /* MedPuzzleToughBack.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F399DD19269BB9D400EF39A6 /* MedPuzzleToughBack.MOV */; };
+		F399DD20269BC0E100EF39A6 /* RotateEasyPuzzle.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F399DD1B269BC0DE00EF39A6 /* RotateEasyPuzzle.MOV */; };
+		F399DD21269BC0E100EF39A6 /* SloMoveEasyPuzzle.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F399DD1C269BC0DF00EF39A6 /* SloMoveEasyPuzzle.MOV */; };
+		F399DD22269BC0E100EF39A6 /* ZoomEasyPuzzle.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F399DD1D269BC0E000EF39A6 /* ZoomEasyPuzzle.MOV */; };
+		F399DD23269BC0E100EF39A6 /* MedMoveEasyPuzzle.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F399DD1E269BC0E000EF39A6 /* MedMoveEasyPuzzle.MOV */; };
+		F399DD24269BC0E100EF39A6 /* FastMoveEasyPuzzle.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F399DD1F269BC0E100EF39A6 /* FastMoveEasyPuzzle.MOV */; };
 		F3A62AFD2676C40D00B524ED /* IMG_1434.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F3A62AFC2676C40D00B524ED /* IMG_1434.MOV */; };
 		F3B94CDE260D386600AC1622 /* puzzle1.png in Resources */ = {isa = PBXBuildFile; fileRef = F3B94CDD260D386600AC1622 /* puzzle1.png */; };
 		F3B94CE4260D4AD200AC1622 /* Puzzle4.png in Resources */ = {isa = PBXBuildFile; fileRef = F3B94CE3260D4AD200AC1622 /* Puzzle4.png */; };
 		F3C15B0D25F19B1700A999CB /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C15B0C25F19B1700A999CB /* MainViewModel.swift */; };
-		F3C9A7142651CA4A00244EA7 /* IMG_2744.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F3C9A7102651CA4A00244EA7 /* IMG_2744.MOV */; };
-		F3C9A7152651CA4A00244EA7 /* IMG_2745.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F3C9A7112651CA4A00244EA7 /* IMG_2745.MOV */; };
+		F3C9A7142651CA4A00244EA7 /* MedMovementEasyPuzzle.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F3C9A7102651CA4A00244EA7 /* MedMovementEasyPuzzle.MOV */; };
+		F3C9A7152651CA4A00244EA7 /* LittleMovementEasyPuzzle.MOV in Resources */ = {isa = PBXBuildFile; fileRef = F3C9A7112651CA4A00244EA7 /* LittleMovementEasyPuzzle.MOV */; };
 		F3C9A71A2651CA8600244EA7 /* RectangleDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C9A7192651CA8600244EA7 /* RectangleDetectorTests.swift */; };
 		F3C9A71E2651CCDB00244EA7 /* VideoReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C9A71D2651CCDB00244EA7 /* VideoReader.swift */; };
 		F3E5ED9C2607F4F1001D986E /* DigitDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E5ED9B2607F4F1001D986E /* DigitDetectorTests.swift */; };
@@ -41,7 +49,6 @@
 		F3F9B2EA26127A5B009EDE47 /* MiddleBox3.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2E926127A5B009EDE47 /* MiddleBox3.png */; };
 		F3F9B2F026157CC2009EDE47 /* MiddleBox3Clean.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2EF26157CC2009EDE47 /* MiddleBox3Clean.png */; };
 		F3F9B2F626157D5F009EDE47 /* UpperLeftCorner1Clean.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2F526157D5F009EDE47 /* UpperLeftCorner1Clean.png */; };
-		F3F9B2FC261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = F3F9B2FB261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel */; };
 		F3F9B3002616732D009EDE47 /* MiddleBox3CleanLowSat.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B2FF2616732D009EDE47 /* MiddleBox3CleanLowSat.png */; };
 		F3F9B306261674A3009EDE47 /* singleDigit0HiContrast.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B305261674A3009EDE47 /* singleDigit0HiContrast.png */; };
 		F3F9B30C261674F7009EDE47 /* singleDigit0CleanHiContr.png in Resources */ = {isa = PBXBuildFile; fileRef = F3F9B30B261674F7009EDE47 /* singleDigit0CleanHiContr.png */; };
@@ -76,13 +83,21 @@
 		F372A886262CD77C00EAF58E /* PuzzleDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleDetector.swift; sourceTree = "<group>"; };
 		F372A8E4264C7B1D00EAF58E /* RectangleDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangleDetector.swift; sourceTree = "<group>"; };
 		F37C85A7267BF4D1000F2933 /* MainViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModelTests.swift; sourceTree = "<group>"; };
-		F399FA14260411B1009EC34D /* MNIST.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = MNIST.mlmodel; sourceTree = "<group>"; };
+		F399DD13269BB7B500EF39A6 /* IMG_2821.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_2821.MOV; sourceTree = "<group>"; };
+		F399DD14269BB7B600EF39A6 /* IMG_2822.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_2822.MOV; sourceTree = "<group>"; };
+		F399DD15269BB7B600EF39A6 /* IMG_2823.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_2823.MOV; sourceTree = "<group>"; };
+		F399DD19269BB9D400EF39A6 /* MedPuzzleToughBack.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = MedPuzzleToughBack.MOV; sourceTree = "<group>"; };
+		F399DD1B269BC0DE00EF39A6 /* RotateEasyPuzzle.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = RotateEasyPuzzle.MOV; sourceTree = "<group>"; };
+		F399DD1C269BC0DF00EF39A6 /* SloMoveEasyPuzzle.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = SloMoveEasyPuzzle.MOV; sourceTree = "<group>"; };
+		F399DD1D269BC0E000EF39A6 /* ZoomEasyPuzzle.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = ZoomEasyPuzzle.MOV; sourceTree = "<group>"; };
+		F399DD1E269BC0E000EF39A6 /* MedMoveEasyPuzzle.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = MedMoveEasyPuzzle.MOV; sourceTree = "<group>"; };
+		F399DD1F269BC0E100EF39A6 /* FastMoveEasyPuzzle.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = FastMoveEasyPuzzle.MOV; sourceTree = "<group>"; };
 		F3A62AFC2676C40D00B524ED /* IMG_1434.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_1434.MOV; sourceTree = "<group>"; };
 		F3B94CDD260D386600AC1622 /* puzzle1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = puzzle1.png; sourceTree = SOURCE_ROOT; };
 		F3B94CE3260D4AD200AC1622 /* Puzzle4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Puzzle4.png; sourceTree = SOURCE_ROOT; };
 		F3C15B0C25F19B1700A999CB /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
-		F3C9A7102651CA4A00244EA7 /* IMG_2744.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_2744.MOV; sourceTree = "<group>"; };
-		F3C9A7112651CA4A00244EA7 /* IMG_2745.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_2745.MOV; sourceTree = "<group>"; };
+		F3C9A7102651CA4A00244EA7 /* MedMovementEasyPuzzle.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = MedMovementEasyPuzzle.MOV; sourceTree = "<group>"; };
+		F3C9A7112651CA4A00244EA7 /* LittleMovementEasyPuzzle.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = LittleMovementEasyPuzzle.MOV; sourceTree = "<group>"; };
 		F3C9A7192651CA8600244EA7 /* RectangleDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RectangleDetectorTests.swift; sourceTree = "<group>"; };
 		F3C9A71D2651CCDB00244EA7 /* VideoReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoReader.swift; sourceTree = "<group>"; };
 		F3E5ED9B2607F4F1001D986E /* DigitDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigitDetectorTests.swift; sourceTree = "<group>"; };
@@ -99,7 +114,6 @@
 		F3F9B2E926127A5B009EDE47 /* MiddleBox3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MiddleBox3.png; sourceTree = SOURCE_ROOT; };
 		F3F9B2EF26157CC2009EDE47 /* MiddleBox3Clean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MiddleBox3Clean.png; sourceTree = SOURCE_ROOT; };
 		F3F9B2F526157D5F009EDE47 /* UpperLeftCorner1Clean.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UpperLeftCorner1Clean.png; sourceTree = SOURCE_ROOT; };
-		F3F9B2FB261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = MNISTClassifierApple20210401.mlmodel; sourceTree = "<group>"; };
 		F3F9B2FF2616732D009EDE47 /* MiddleBox3CleanLowSat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MiddleBox3CleanLowSat.png; sourceTree = SOURCE_ROOT; };
 		F3F9B305261674A3009EDE47 /* singleDigit0HiContrast.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleDigit0HiContrast.png; sourceTree = SOURCE_ROOT; };
 		F3F9B30B261674F7009EDE47 /* singleDigit0CleanHiContr.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleDigit0CleanHiContr.png; sourceTree = SOURCE_ROOT; };
@@ -177,8 +191,6 @@
 				F3683BFF25E849D200B84929 /* Assets.xcassets */,
 				F3683C0125E849D200B84929 /* LaunchScreen.storyboard */,
 				F3683C0425E849D200B84929 /* Info.plist */,
-				F399FA14260411B1009EC34D /* MNIST.mlmodel */,
-				F3F9B2FB261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel */,
 				F3F732B92623D63C0021EEAB /* PuzzleSolver.swift */,
 			);
 			path = SudokuSolver;
@@ -187,6 +199,15 @@
 		F3683C0C25E849D200B84929 /* SudokuSolverTests */ = {
 			isa = PBXGroup;
 			children = (
+				F399DD1B269BC0DE00EF39A6 /* RotateEasyPuzzle.MOV */,
+				F399DD1D269BC0E000EF39A6 /* ZoomEasyPuzzle.MOV */,
+				F399DD1C269BC0DF00EF39A6 /* SloMoveEasyPuzzle.MOV */,
+				F399DD1E269BC0E000EF39A6 /* MedMoveEasyPuzzle.MOV */,
+				F399DD1F269BC0E100EF39A6 /* FastMoveEasyPuzzle.MOV */,
+				F399DD13269BB7B500EF39A6 /* IMG_2821.MOV */,
+				F399DD14269BB7B600EF39A6 /* IMG_2822.MOV */,
+				F399DD15269BB7B600EF39A6 /* IMG_2823.MOV */,
+				F399DD19269BB9D400EF39A6 /* MedPuzzleToughBack.MOV */,
 				F3A62AFC2676C40D00B524ED /* IMG_1434.MOV */,
 				F3F732B52623C8930021EEAB /* puzzleImage.png */,
 				F3E5ED9B2607F4F1001D986E /* DigitDetectorTests.swift */,
@@ -207,8 +228,8 @@
 				F3F9B2E3261279C4009EDE47 /* UpperLeftCorner1.png */,
 				F3F9B3112616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png */,
 				F3F9B2F526157D5F009EDE47 /* UpperLeftCorner1Clean.png */,
-				F3C9A7102651CA4A00244EA7 /* IMG_2744.MOV */,
-				F3C9A7112651CA4A00244EA7 /* IMG_2745.MOV */,
+				F3C9A7102651CA4A00244EA7 /* MedMovementEasyPuzzle.MOV */,
+				F3C9A7112651CA4A00244EA7 /* LittleMovementEasyPuzzle.MOV */,
 				F3E5EDC726082954001D986E /* multiDigits587.png */,
 				F3683C0F25E849D200B84929 /* Info.plist */,
 				F37C85A7267BF4D1000F2933 /* MainViewModelTests.swift */,
@@ -309,22 +330,31 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3F9B30C261674F7009EDE47 /* singleDigit0CleanHiContr.png in Resources */,
-				F3C9A7142651CA4A00244EA7 /* IMG_2744.MOV in Resources */,
+				F3C9A7142651CA4A00244EA7 /* MedMovementEasyPuzzle.MOV in Resources */,
 				F3A62AFD2676C40D00B524ED /* IMG_1434.MOV in Resources */,
 				F3F9B2EA26127A5B009EDE47 /* MiddleBox3.png in Resources */,
+				F399DD17269BB7B600EF39A6 /* IMG_2822.MOV in Resources */,
 				F3F9B3122616763D009EDE47 /* MiddleBox3CleanHiCLowSat.png in Resources */,
-				F3C9A7152651CA4A00244EA7 /* IMG_2745.MOV in Resources */,
+				F3C9A7152651CA4A00244EA7 /* LittleMovementEasyPuzzle.MOV in Resources */,
 				F3F9B2E4261279C4009EDE47 /* UpperLeftCorner1.png in Resources */,
 				F3F732AA2623ABAA0021EEAB /* Puzzle2Cropped.png in Resources */,
+				F399DD22269BC0E100EF39A6 /* ZoomEasyPuzzle.MOV in Resources */,
+				F399DD23269BC0E100EF39A6 /* MedMoveEasyPuzzle.MOV in Resources */,
 				F3F9B3002616732D009EDE47 /* MiddleBox3CleanLowSat.png in Resources */,
+				F399DD20269BC0E100EF39A6 /* RotateEasyPuzzle.MOV in Resources */,
+				F399DD24269BC0E100EF39A6 /* FastMoveEasyPuzzle.MOV in Resources */,
 				F3E5EDC826082954001D986E /* multiDigits587.png in Resources */,
 				F3B94CDE260D386600AC1622 /* puzzle1.png in Resources */,
 				F3F9B2F026157CC2009EDE47 /* MiddleBox3Clean.png in Resources */,
 				F3F9B306261674A3009EDE47 /* singleDigit0HiContrast.png in Resources */,
 				F3E5EDC026082804001D986E /* singleDigit2.png in Resources */,
+				F399DD1A269BB9D400EF39A6 /* MedPuzzleToughBack.MOV in Resources */,
+				F399DD21269BC0E100EF39A6 /* SloMoveEasyPuzzle.MOV in Resources */,
 				F3B94CE4260D4AD200AC1622 /* Puzzle4.png in Resources */,
 				F3F9B2F626157D5F009EDE47 /* UpperLeftCorner1Clean.png in Resources */,
+				F399DD18269BB7B600EF39A6 /* IMG_2823.MOV in Resources */,
 				F3E5EDAC2607FD50001D986E /* singleDigit0.png in Resources */,
+				F399DD16269BB7B600EF39A6 /* IMG_2821.MOV in Resources */,
 				F3F732B02623C08C0021EEAB /* Puzzle3Cropped.png in Resources */,
 				F3F732B62623C8930021EEAB /* puzzleImage.png in Resources */,
 			);
@@ -379,9 +409,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3F9B2FC261670FC009EDE47 /* MNISTClassifierApple20210401.mlmodel in Sources */,
 				F3E5EDA12607FAAF001D986E /* DigitDetector.swift in Sources */,
-				F399FA15260411B1009EC34D /* MNIST.mlmodel in Sources */,
 				F3C15B0D25F19B1700A999CB /* MainViewModel.swift in Sources */,
 				F3683BFB25E849D100B84929 /* ViewController.swift in Sources */,
 				F3683C2A25EC6AC500B84929 /* VideoPreviewView.swift in Sources */,
