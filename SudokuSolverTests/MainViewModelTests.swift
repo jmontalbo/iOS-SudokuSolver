@@ -133,42 +133,89 @@ class MainViewModelTests: XCTestCase {
     }
     
     func runTest(videoFilename: String, expectedSolvedPuzzle: [[Int]]) {
-        var resultsReported = 0
-        var puzzlesDetected = 0.0
         let fileString = Bundle(for: type(of: self)).path(forResource: videoFilename, ofType: "MOV")!
         let videoURL = URL(fileURLWithPath: fileString)
         let videoFile = AVAsset(url: videoURL)
         let videoReader = VideoReader(videoAsset: videoFile)!
-        var framesIn = 0.0
+        var framesIn = 0
+        var testEvents = [TestEvent]()
         let expectation = expectation(description: "digits recognized")
         testQueue.async {
             while let nextFrame = videoReader.nextFrame(){
-                framesIn += 1.0
+                framesIn += 1
+                print("frame# \(framesIn)")
                 let image = CIImage(cvPixelBuffer: nextFrame)
                 self.stateMachineUnderTest.stateMachineQueue.sync {
                     self.stateMachineUnderTest.eventHandler(event: .imageIn(image, orientation: videoReader.orientation))
-                    resultsReported += 1
                     guard let currentPuzzle = self.stateMachineUnderTest.currentDetectedPuzzles.first else {
+                        testEvents.append(TestEvent(frameNumber: framesIn, currentDetectedPuzzle: nil))
                         return
                     }
-                    guard let solvedPuzzle = currentPuzzle.value.solvedPuzzle else {
-                        return
-                    }
-                    if solvedPuzzle == expectedSolvedPuzzle {
-                        puzzlesDetected += 1.0
-                    }
+                    print("Puzzle coordinates: \(currentPuzzle.value.rect)")
+                    testEvents.append(TestEvent(frameNumber: framesIn, currentDetectedPuzzle: currentPuzzle.value))
                 }
             }
             expectation.fulfill()
         }
         
         waitForExpectations(timeout: 50.0) {_ in
-            let fractionDetected = puzzlesDetected/framesIn
+            let eventsWithExpectedSolvedPuzzle = testEvents.filter { $0.hasExpectedSolution(expectedSolvedPuzzle) }
+            let eventsWithFailedPuzzle = testEvents.filter { !$0.hasExpectedSolution(expectedSolvedPuzzle) }
+            let eventsWithNoRectangle = testEvents.filter { $0.currentDetectedPuzzle == nil }
+            let eventsWithNoDigitsDetected = testEvents.filter {
+                $0.currentDetectedPuzzle != nil &&
+                $0.currentDetectedPuzzle!.unSolvedPuzzle == nil
+            }
+            let puzzlesDetectedTotal = eventsWithExpectedSolvedPuzzle.count
+            let expectedSolvedPuzzleHist = eventsWithExpectedSolvedPuzzle.reduce([Int:Int]()) { histogram, event in
+                let eventBucket = Int(Double(event.frameNumber) / Double(framesIn) * 10.0)
+                let currentBucketValue = histogram[eventBucket] ?? 0
+                var histogramCopy = histogram
+                histogramCopy[eventBucket] = currentBucketValue + 1
+                return histogramCopy
+            }
+            let failedPuzzleHist = eventsWithFailedPuzzle.reduce([Int:Int]()) { histogram, event in
+                let eventBucket = Int(Double(event.frameNumber) / Double(framesIn) * 10.0)
+                let currentBucketValue = histogram[eventBucket] ?? 0
+                var histogramCopy = histogram
+                histogramCopy[eventBucket] = currentBucketValue + 1
+                return histogramCopy
+            }
+            let failedRectangleHist = eventsWithNoRectangle.reduce([Int:Int]()) { histogram, event in
+                let eventBucket = Int(Double(event.frameNumber) / Double(framesIn) * 10.0)
+                let currentBucketValue = histogram[eventBucket] ?? 0
+                var histogramCopy = histogram
+                histogramCopy[eventBucket] = currentBucketValue + 1
+                return histogramCopy
+            }
+            let noDigitsHist = eventsWithNoDigitsDetected.reduce([Int:Int]()) { histogram, event in
+                let eventBucket = Int(Double(event.frameNumber) / Double(framesIn) * 10.0)
+                let currentBucketValue = histogram[eventBucket] ?? 0
+                var histogramCopy = histogram
+                histogramCopy[eventBucket] = currentBucketValue + 1
+                return histogramCopy
+            }
+            let fractionDetected = Double(puzzlesDetectedTotal)/Double(framesIn)
             print("frames in = \(framesIn)")
-            print("results reported = \(resultsReported)")
-            print("puzzles detected = \(puzzlesDetected)")
+            print("puzzles detected = \(puzzlesDetectedTotal)")
             print("fraction detected = \(fractionDetected)")
+            print("Histogram of puzzles detected over clip duration: \(expectedSolvedPuzzleHist.sorted(by: <))")
+            print("Histogram of failed puzzle detection over clip duration: \(failedPuzzleHist.sorted(by: <))")
+            print("Histogram of failed rectangle detection over clip duration: \(failedRectangleHist.sorted(by: <))")
+            print("Histogram of frames with no digits over clip duration: \(noDigitsHist.sorted(by: <))")
+
             XCTAssertGreaterThan(fractionDetected, 0.5)
+        }
+    }
+    
+    struct TestEvent {
+        let frameNumber: Int
+        let currentDetectedPuzzle: MainViewModel.DetectedPuzzle?
+        func hasExpectedSolution(_ expectedSolvedPuzzle: [[Int]]) -> Bool {
+            guard let puzzleEntry = currentDetectedPuzzle?.solvedPuzzle else {
+                return false
+            }
+            return puzzleEntry == expectedSolvedPuzzle
         }
     }
 }

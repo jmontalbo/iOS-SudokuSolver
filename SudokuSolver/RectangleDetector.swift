@@ -15,30 +15,30 @@ class RectangleDetector {
     private let rectangleDetectionRequest = VNDetectRectanglesRequest()
     private var rectangleTrackingRequest: VNTrackRectangleRequest? = nil
     private var sequenceRequestHandler: VNSequenceRequestHandler? = nil
-    private var lastObservations: VNRectangleObservation? = nil
-    private var lastReturnedObservation: VNRectangleObservation? = nil
+    private var lastObservation: VNRectangleObservation? = nil
+    private var observationToReplayOnError: VNRectangleObservation? = nil
     private var failedSubsequentObservations = 0
     
     func detectRectangles(image: CIImage, orientation: CGImagePropertyOrientation = .up) -> [UUID: VNRectangleObservation] {
         let filteredImage = filterImage(image: image)
         let request: VNRequest
-        if let lastObservations = lastObservations {
+        if let lastObservation = lastObservation {
             if rectangleTrackingRequest == nil {
-                rectangleTrackingRequest = VNTrackRectangleRequest(rectangleObservation: lastObservations)
+                rectangleTrackingRequest = VNTrackRectangleRequest(rectangleObservation: lastObservation)
             }
-            rectangleTrackingRequest!.inputObservation = lastObservations
+            rectangleTrackingRequest!.inputObservation = lastObservation
             request = rectangleTrackingRequest!
         } else {
             //let rectangleDetectionRequest = VNDetectRectanglesRequest()
             //rectangleDetectionRequest.minimumConfidence = VNConfidence(0.8)
             rectangleDetectionRequest.minimumAspectRatio = VNAspectRatio(0.95)
             rectangleDetectionRequest.maximumAspectRatio = VNAspectRatio(1.05)
-            rectangleDetectionRequest.minimumSize = Float(0.6)
+            rectangleDetectionRequest.minimumSize = Float(0.4)
             rectangleDetectionRequest.maximumObservations = 1
             rectangleDetectionRequest.quadratureTolerance = 5
             request = rectangleDetectionRequest
         }
-        
+    
         if sequenceRequestHandler == nil {
             sequenceRequestHandler = VNSequenceRequestHandler()
         }
@@ -50,14 +50,14 @@ class RectangleDetector {
             if failedSubsequentObservations > 5 {
                 print("sequenceRequestHandler error \(error)")
                 failedSubsequentObservations = 0
-                lastReturnedObservation = nil
+                observationToReplayOnError = nil
             }
-            lastObservations = nil
+            lastObservation = nil
             sequenceRequestHandler = nil
         }
         guard let rectObservations = request.results as? [VNRectangleObservation] else {
 //            failedSubsequentObservations += 1
-            if let lastReturnedObservation = lastReturnedObservation {
+            if let lastReturnedObservation = observationToReplayOnError {
                 return [lastReturnedObservation.uuid: lastReturnedObservation]
             } else {
                 return [:]
@@ -67,8 +67,8 @@ class RectangleDetector {
         var detectedRects = [UUID : VNRectangleObservation]()
         for rect in rectObservations {
             detectedRects[rect.uuid] = rect
-            lastObservations = rect
-            lastReturnedObservation = rect
+            lastObservation = rect
+            observationToReplayOnError = rect
         }
 //        print(detectedRects)
         return detectedRects
